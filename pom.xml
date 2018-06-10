@@ -7,6 +7,7 @@
 	<artifactId>papershelf</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<modules>
+		<module>core</module>
 		<module>data</module>
 		<module>exception</module>
 	</modules>
@@ -64,20 +65,16 @@
 			<artifactId>spring-boot-starter-test</artifactId>
 			<scope>test</scope>
 		</dependency>
-
-		<dependency>
-			<groupId>io.ermdev</groupId>
-			<artifactId>data</artifactId>
-		</dependency>
-
-		<dependency>
-			<groupId>io.ermdev</groupId>
-			<artifactId>exception</artifactId>
-		</dependency>
 	</dependencies>
 
 	<dependencyManagement>
 		<dependencies>
+			<dependency>
+				<groupId>io.ermdev</groupId>
+				<artifactId>core</artifactId>
+				<version>${project.version}</version>
+			</dependency>
+
 			<dependency>
 				<groupId>io.ermdev</groupId>
 				<artifactId>data</artifactId>
@@ -99,7 +96,19 @@
 			<plugin>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
+				<executions>
+					<execution>
+						<goals>
+							<goal>repackage</goal>
+						</goals>
+						<configuration>
+							<classifier>spring-boot</classifier>
+							<mainClass>io.ermdev.papershelf.PaperShelfApplication</mainClass>
+						</configuration>
+					</execution>
+				</executions>
 			</plugin>
+
 			<plugin>
 				<artifactId>kotlin-maven-plugin</artifactId>
 				<groupId>org.jetbrains.kotlin</groupId>
@@ -121,6 +130,4 @@
 			</plugin>
 		</plugins>
 	</build>
-
-
 </project>

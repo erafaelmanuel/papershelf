@@ -11,5 +11,12 @@
 
     <artifactId>data</artifactId>
 
+    <dependencies>
+        <dependency>
+            <groupId>io.ermdev</groupId>
+            <artifactId>exception</artifactId>
+        </dependency>
+    </dependencies>
+
 
 </project>
