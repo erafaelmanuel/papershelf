@@ -1,4 +1,4 @@
-package ermdev.papershelf
+package io.ermdev.papershelf
 
 import org.junit.Test
 import org.junit.runner.RunWith

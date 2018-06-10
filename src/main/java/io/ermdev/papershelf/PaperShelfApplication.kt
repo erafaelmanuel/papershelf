@@ -1,11 +1,11 @@
-package ermdev.papershelf
+package io.ermdev.papershelf
 
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.runApplication
 
 @SpringBootApplication
-class PapershelfApplication
+class PaperShelfApplication
 
 fun main(args: Array<String>) {
-    runApplication<PapershelfApplication>(*args)
+    runApplication<PaperShelfApplication>(*args)
 }

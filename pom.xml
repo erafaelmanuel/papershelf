@@ -3,9 +3,12 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 
-	<groupId>ermdev</groupId>
+	<groupId>io.ermdev</groupId>
 	<artifactId>papershelf</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
+	<modules>
+		<module>data</module>
+	</modules>
 	<packaging>pom</packaging>
 
 	<name>papershelf</name>
@@ -60,7 +63,22 @@
 			<artifactId>spring-boot-starter-test</artifactId>
 			<scope>test</scope>
 		</dependency>
+
+		<dependency>
+			<groupId>io.ermdev</groupId>
+			<artifactId>data</artifactId>
+		</dependency>
 	</dependencies>
+
+	<dependencyManagement>
+		<dependencies>
+			<dependency>
+				<groupId>io.ermdev</groupId>
+				<artifactId>data</artifactId>
+				<version>0.0.1-SNAPSHOT</version>
+			</dependency>
+		</dependencies>
+	</dependencyManagement>
 
 	<build>
 		<sourceDirectory>src/main/java</sourceDirectory>
