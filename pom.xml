@@ -8,6 +8,7 @@
 	<version>0.0.1-SNAPSHOT</version>
 	<modules>
 		<module>data</module>
+		<module>exception</module>
 	</modules>
 	<packaging>pom</packaging>
 
@@ -68,6 +69,11 @@
 			<groupId>io.ermdev</groupId>
 			<artifactId>data</artifactId>
 		</dependency>
+
+		<dependency>
+			<groupId>io.ermdev</groupId>
+			<artifactId>exception</artifactId>
+		</dependency>
 	</dependencies>
 
 	<dependencyManagement>
@@ -75,7 +81,13 @@
 			<dependency>
 				<groupId>io.ermdev</groupId>
 				<artifactId>data</artifactId>
-				<version>0.0.1-SNAPSHOT</version>
+				<version>${project.version}</version>
+			</dependency>
+
+			<dependency>
+				<groupId>io.ermdev</groupId>
+				<artifactId>exception</artifactId>
+				<version>${project.version}</version>
 			</dependency>
 		</dependencies>
 	</dependencyManagement>
