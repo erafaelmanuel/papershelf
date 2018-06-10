@@ -6,7 +6,12 @@
 	<groupId>io.ermdev</groupId>
 	<artifactId>gogo</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<packaging>jar</packaging>
+	<modules>
+		<module>data</module>
+		<module>rest</module>
+		<module>web</module>
+	</modules>
+	<packaging>pom</packaging>
 
 	<name>Gogo</name>
 	<description>A really good site to read manga legally</description>
@@ -35,7 +40,34 @@
 			<artifactId>spring-boot-starter-test</artifactId>
 			<scope>test</scope>
 		</dependency>
+
+		<dependency>
+			<groupId>io.ermdev</groupId>
+			<artifactId>web</artifactId>
+		</dependency>
 	</dependencies>
+
+	<dependencyManagement>
+		<dependencies>
+			<dependency>
+				<groupId>io.ermdev</groupId>
+				<artifactId>data</artifactId>
+				<version>${project.version}</version>
+			</dependency>
+
+			<dependency>
+				<groupId>io.ermdev</groupId>
+				<artifactId>rest</artifactId>
+				<version>${project.version}</version>
+			</dependency>
+
+			<dependency>
+				<groupId>io.ermdev</groupId>
+				<artifactId>web</artifactId>
+				<version>${project.version}</version>
+			</dependency>
+		</dependencies>
+	</dependencyManagement>
 
 	<build>
 		<plugins>
