@@ -12,5 +12,5 @@ class Book(@Id
            var title: String = "",
 
            @ManyToOne(cascade = [CascadeType.PERSIST])
-           @JoinColumn(name = "book_id", nullable = false)
-           var author: Author = Author())
+           @JoinColumn(name = "author_id")
+           var author: Author? = null)

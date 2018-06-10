@@ -11,7 +11,11 @@ class BookService(@Autowired val bookRepository: BookRepository) {
 
     fun findById(id: String): Book {
         return bookRepository.findById(id)
-                .orElseThrow { EntityException("No teacher entity with id $id exists!") }
+                .orElseThrow { EntityException("No book with id '$id' exists!") }
+    }
+
+    fun save(book: Book) {
+        bookRepository.save(book)
     }
 
 }

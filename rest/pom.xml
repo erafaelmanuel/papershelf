@@ -9,17 +9,12 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>core</artifactId>
+    <artifactId>rest</artifactId>
 
     <dependencies>
         <dependency>
             <groupId>io.ermdev</groupId>
             <artifactId>data</artifactId>
-        </dependency>
-
-        <dependency>
-            <groupId>io.ermdev</groupId>
-            <artifactId>rest</artifactId>
         </dependency>
     </dependencies>
 
