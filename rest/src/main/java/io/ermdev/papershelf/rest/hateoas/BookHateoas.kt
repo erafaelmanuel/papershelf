@@ -15,8 +15,14 @@ class BookHateoas {
 
         fun getAuthorLink(bookId: String): Link {
             return linkTo(BookController::class.java)
-                    .slash("$bookId/author")
+                    .slash("$bookId/authors")
                     .withRel("author")
+        }
+
+        fun getGenreLink(bookId: String): Link {
+            return linkTo(BookController::class.java)
+                    .slash("$bookId/genres")
+                    .withRel("genre")
         }
     }
 }

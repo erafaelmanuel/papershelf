@@ -8,6 +8,7 @@ import io.ermdev.papershelf.rest.Message
 import io.ermdev.papershelf.rest.dto.AuthorDto
 import io.ermdev.papershelf.rest.dto.BookDto
 import io.ermdev.papershelf.rest.hateoas.BookHateoas.Companion.getAuthorLink
+import io.ermdev.papershelf.rest.hateoas.BookHateoas.Companion.getGenreLink
 import io.ermdev.papershelf.rest.hateoas.BookHateoas.Companion.getSelfLink
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.hateoas.Resources
@@ -28,6 +29,7 @@ class BookController(@Autowired val bookService: BookService,
 
             dto.add(getSelfLink(book.id))
             dto.add(getAuthorLink(book.id))
+            dto.add(getGenreLink(book.id))
             resources.add(dto)
         })
         return ResponseEntity(Resources(resources), HttpStatus.OK)
@@ -41,6 +43,7 @@ class BookController(@Autowired val bookService: BookService,
 
             dto.add(getSelfLink(book.id))
             dto.add(getAuthorLink(book.id))
+            dto.add(getGenreLink(book.id))
             ResponseEntity(dto, HttpStatus.OK)
         } catch (e: EntityException) {
             val message = Message(status = 404, error = "Not Found", message = e.message)
