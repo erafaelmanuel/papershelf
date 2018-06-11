@@ -2,16 +2,20 @@ package io.ermdev.papershelf.rest.controller
 
 import io.ermdev.papershelf.data.entity.Author
 import io.ermdev.papershelf.data.service.AuthorService
+import io.ermdev.papershelf.data.service.BookService
 import io.ermdev.papershelf.exception.EntityException
 import io.ermdev.papershelf.rest.Message
 import io.ermdev.papershelf.rest.dto.AuthorDto
+import io.ermdev.papershelf.rest.dto.BookDto
+import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 
 @RestController
 @RequestMapping("/authors")
-class AuthorController(val authorService: AuthorService) {
+class AuthorController(@Autowired val authorService: AuthorService,
+                       @Autowired val bookService: BookService) {
 
     @GetMapping
     fun getAuthors(): ResponseEntity<Any> {
@@ -33,6 +37,16 @@ class AuthorController(val authorService: AuthorService) {
             val message = Message(status = 404, error = "Not Found", message = e.message)
             ResponseEntity(message, HttpStatus.NOT_FOUND)
         }
+    }
+
+    @GetMapping("/{authorId}/books")
+    fun getBooks(@PathVariable("authorId") authorId: String): ResponseEntity<Any> {
+        val dtoList = ArrayList<BookDto>()
+        bookService.findByAuthorId(authorId).forEach { book ->
+            val dto = BookDto(id = book.id, title = book.title)
+            dtoList.add(dto)
+        }
+        return ResponseEntity(dtoList, HttpStatus.OK)
     }
 
     @PostMapping

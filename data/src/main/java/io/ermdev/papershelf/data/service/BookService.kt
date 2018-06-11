@@ -18,6 +18,8 @@ class BookService(@Autowired val bookRepository: BookRepository) {
                 .orElseThrow { EntityException("No book with id '$id' exists!") }
     }
 
+    fun findByAuthorId(authorId: String): List<Book> = bookRepository.findByAuthorId(authorId)
+
     fun save(book: Book) {
         if (StringUtils.isEmpty(book.title)) {
             throw EntityException("title cannot be empty")
