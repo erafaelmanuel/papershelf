@@ -7,7 +7,10 @@ import io.ermdev.papershelf.exception.EntityException
 import io.ermdev.papershelf.rest.Message
 import io.ermdev.papershelf.rest.dto.AuthorDto
 import io.ermdev.papershelf.rest.dto.BookDto
+import io.ermdev.papershelf.rest.hateoas.BookHateoas.Companion.getAuthorLink
+import io.ermdev.papershelf.rest.hateoas.BookHateoas.Companion.getSelfLink
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.hateoas.Resources
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
@@ -22,9 +25,11 @@ class BookController(@Autowired val bookService: BookService,
         val dtoList = ArrayList<BookDto>()
         bookService.findAll().forEach { book ->
             val dto = BookDto(id = book.id, title = book.title)
+            dto.add(getSelfLink(book.id))
+            dto.add(getAuthorLink(book.id))
             dtoList.add(dto)
         }
-        return ResponseEntity(dtoList, HttpStatus.OK)
+        return ResponseEntity(Resources(dtoList), HttpStatus.OK)
     }
 
     @GetMapping("/{bookId}")
@@ -32,6 +37,8 @@ class BookController(@Autowired val bookService: BookService,
         return try {
             val book = bookService.findById(bookId)
             val dto = BookDto(id = book.id, title = book.title)
+            dto.add(getSelfLink(book.id))
+            dto.add(getAuthorLink(book.id))
             ResponseEntity(dto, HttpStatus.OK)
         } catch (e: EntityException) {
             val message = Message(status = 404, error = "Not Found", message = e.message)
