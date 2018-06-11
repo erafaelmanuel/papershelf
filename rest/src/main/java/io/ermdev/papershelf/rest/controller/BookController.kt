@@ -7,13 +7,17 @@ import io.ermdev.papershelf.exception.EntityException
 import io.ermdev.papershelf.rest.Message
 import io.ermdev.papershelf.rest.dto.AuthorDto
 import io.ermdev.papershelf.rest.dto.BookDto
+import io.ermdev.papershelf.rest.hateoas.AuthorHateoas
 import io.ermdev.papershelf.rest.hateoas.BookHateoas.Companion.getAuthorLink
 import io.ermdev.papershelf.rest.hateoas.BookHateoas.Companion.getGenreLink
 import io.ermdev.papershelf.rest.hateoas.BookHateoas.Companion.getSelfLink
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.hateoas.Resource
 import org.springframework.hateoas.Resources
+import org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
+import org.springframework.util.StringUtils
 import org.springframework.web.bind.annotation.*
 
 @RestController
@@ -22,17 +26,28 @@ class BookController(@Autowired val bookService: BookService,
                      @Autowired val authorService: AuthorService) {
 
     @GetMapping
-    fun getBooks(): ResponseEntity<Any> {
+    fun getBooks(@RequestParam(value = "authorId", required = false) authorId: String?): ResponseEntity<Any> {
         val resources = ArrayList<BookDto>()
-        bookService.findAll().forEach({ book ->
-            val dto = BookDto(id = book.id, title = book.title)
+        if (!StringUtils.isEmpty(authorId)) {
+            bookService.findByAuthorId(authorId!!).forEach({ book ->
+                val dto = BookDto(id = book.id, title = book.title)
 
-            dto.add(getSelfLink(book.id))
-            dto.add(getAuthorLink(book.id))
-            dto.add(getGenreLink(book.id))
-            resources.add(dto)
-        })
-        return ResponseEntity(Resources(resources), HttpStatus.OK)
+                dto.add(getSelfLink(book.id))
+                dto.add(getAuthorLink(book.id))
+                dto.add(getGenreLink(book.id))
+                resources.add(dto)
+            })
+        } else {
+            bookService.findAll().forEach({ book ->
+                val dto = BookDto(id = book.id, title = book.title)
+
+                dto.add(getSelfLink(book.id))
+                dto.add(getAuthorLink(book.id))
+                dto.add(getGenreLink(book.id))
+                resources.add(dto)
+            })
+        }
+        return ResponseEntity(Resources(resources, linkTo(this::class.java).withSelfRel()), HttpStatus.OK)
     }
 
     @GetMapping("/{bookId}")
@@ -44,7 +59,7 @@ class BookController(@Autowired val bookService: BookService,
             dto.add(getSelfLink(book.id))
             dto.add(getAuthorLink(book.id))
             dto.add(getGenreLink(book.id))
-            ResponseEntity(dto, HttpStatus.OK)
+            ResponseEntity(Resource(dto), HttpStatus.OK)
         } catch (e: EntityException) {
             val message = Message(status = 404, error = "Not Found", message = e.message)
             ResponseEntity(message, HttpStatus.NOT_FOUND)
@@ -58,9 +73,11 @@ class BookController(@Autowired val bookService: BookService,
             val author = book.author
             if (author != null) {
                 val dto = AuthorDto(id = author.id, name = author.name)
-                ResponseEntity(dto, HttpStatus.OK)
+
+                dto.add(AuthorHateoas.getSelfLink(author.id))
+                ResponseEntity(Resource(dto), HttpStatus.OK)
             } else {
-                ResponseEntity("No Author Found", HttpStatus.NOT_FOUND)
+                ResponseEntity(HttpStatus.NOT_FOUND)
             }
         } catch (e: EntityException) {
             val message = Message(status = 404, error = "Not Found", message = e.message)
