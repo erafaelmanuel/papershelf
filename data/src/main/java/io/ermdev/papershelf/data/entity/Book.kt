@@ -5,10 +5,10 @@ import javax.persistence.*
 @Entity
 @Table(name = "tbl_book")
 class Book(@Id
-           @Column(name = "id")
+           @Column(name = "_id")
            var id: String = "",
 
-           @Column(name = "title")
+           @Column(name = "_title")
            var title: String = "",
 
            @ManyToOne(cascade = [CascadeType.PERSIST])

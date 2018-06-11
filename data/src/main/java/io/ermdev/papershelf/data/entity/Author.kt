@@ -5,10 +5,10 @@ import javax.persistence.*
 @Entity
 @Table(name = "tbl_author")
 class Author(@Id
-             @Column(name = "id")
+             @Column(name = "_id")
              var id: String = "",
 
-             @Column(name = "name")
+             @Column(name = "_name")
              var name: String = "",
 
              @OneToMany(mappedBy = "author", cascade = [CascadeType.REMOVE])
