@@ -19,11 +19,18 @@ class BookService(@Autowired val bookRepository: BookRepository) {
     }
 
     fun save(book: Book) {
-        book.id = UUID.randomUUID().toString()
         if (StringUtils.isEmpty(book.title)) {
             throw EntityException("title cannot be empty")
         }
+        if (!book.title.matches(Regex("^[a-zA-Z0-9]+( [a-zA-Z0-9]+)*$"))) {
+            throw EntityException("title cannot contain special characters")
+        }
+        if (StringUtils.isEmpty(book.id)) {
+            book.id = UUID.randomUUID().toString()
+        }
         bookRepository.save(book)
     }
+
+    fun deleteById(bookId: String) = bookRepository.deleteById(bookId)
 
 }
