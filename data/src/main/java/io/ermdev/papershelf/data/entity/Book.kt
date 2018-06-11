@@ -13,4 +13,9 @@ class Book(@Id
 
            @ManyToOne(cascade = [CascadeType.PERSIST])
            @JoinColumn(name = "author_id")
-           var author: Author? = null)
+           var author: Author? = null,
+
+           @ManyToMany(cascade = [CascadeType.ALL])
+           @JoinTable(name = "tbl_book_genre", joinColumns = [JoinColumn(name = "book_id")],
+                   inverseJoinColumns = [JoinColumn(name = "genre_id")])
+           var genres: MutableSet<Genre> = HashSet())

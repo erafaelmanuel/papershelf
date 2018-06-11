@@ -1,9 +1,6 @@
 package io.ermdev.papershelf.data.entity
 
-import javax.persistence.Column
-import javax.persistence.Entity
-import javax.persistence.Id
-import javax.persistence.Table
+import javax.persistence.*
 
 @Entity
 @Table(name = "tbl_genre")
@@ -15,4 +12,7 @@ class Genre(@Id
             var name: String = "",
 
             @Column(name = "_description")
-            var description: String = "")
+            var description: String = "",
+
+            @ManyToMany(mappedBy = "genres")
+            var books: MutableSet<Book> = HashSet())
