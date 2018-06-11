@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.*
 class AuthorController(val authorService: AuthorService) {
 
     @GetMapping
-    fun getAuthorss(): ResponseEntity<Any> {
+    fun getAuthors(): ResponseEntity<Any> {
         val dtoList = ArrayList<AuthorDto>()
         authorService.findAll().forEach { author ->
             val dto = AuthorDto(id = author.id, name = author.name)
