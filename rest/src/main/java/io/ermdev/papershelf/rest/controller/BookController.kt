@@ -100,6 +100,7 @@ class BookController(@Autowired val bookService: BookService,
     fun updateBookById(@PathVariable("bookId") bookId: String, @RequestBody body: Book): ResponseEntity<Any> {
         return try {
             val book = bookService.findById(bookId)
+
             book.title = body.title
             bookService.save(book)
             ResponseEntity(HttpStatus.OK)
@@ -114,6 +115,7 @@ class BookController(@Autowired val bookService: BookService,
                      @PathVariable("authorId") authorId: String): ResponseEntity<Any> {
         return try {
             val book = bookService.findById(bookId)
+
             book.author = authorService.findById(authorId)
             bookService.save(book)
             ResponseEntity(HttpStatus.OK)
@@ -133,6 +135,7 @@ class BookController(@Autowired val bookService: BookService,
     fun deleteAuthor(@PathVariable("bookId") bookId: String): ResponseEntity<Any> {
         return try {
             val book = bookService.findById(bookId)
+
             book.author = null
             bookService.save(book)
             ResponseEntity(HttpStatus.OK)
