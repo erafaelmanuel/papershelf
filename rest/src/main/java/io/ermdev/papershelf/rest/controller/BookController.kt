@@ -22,14 +22,15 @@ class BookController(@Autowired val bookService: BookService,
 
     @GetMapping
     fun getBooks(): ResponseEntity<Any> {
-        val dtoList = ArrayList<BookDto>()
-        bookService.findAll().forEach { book ->
+        val resources = ArrayList<BookDto>()
+        bookService.findAll().forEach({ book ->
             val dto = BookDto(id = book.id, title = book.title)
+
             dto.add(getSelfLink(book.id))
             dto.add(getAuthorLink(book.id))
-            dtoList.add(dto)
-        }
-        return ResponseEntity(Resources(dtoList), HttpStatus.OK)
+            resources.add(dto)
+        })
+        return ResponseEntity(Resources(resources), HttpStatus.OK)
     }
 
     @GetMapping("/{bookId}")
@@ -37,6 +38,7 @@ class BookController(@Autowired val bookService: BookService,
         return try {
             val book = bookService.findById(bookId)
             val dto = BookDto(id = book.id, title = book.title)
+
             dto.add(getSelfLink(book.id))
             dto.add(getAuthorLink(book.id))
             ResponseEntity(dto, HttpStatus.OK)
