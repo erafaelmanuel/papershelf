@@ -11,6 +11,12 @@ class Book(@Id
            @Column(name = "_title")
            var title: String = "",
 
+           @Column(name = "_status", length = 50)
+           var status: String = "",
+
+           @Column(name = "_summary", length = 500)
+           var summary: String = "",
+
            @ManyToMany(cascade = [CascadeType.ALL])
            @JoinTable(name = "tbl_book_author", joinColumns = [JoinColumn(name = "book_id")],
                    inverseJoinColumns = [JoinColumn(name = "author_id")])
