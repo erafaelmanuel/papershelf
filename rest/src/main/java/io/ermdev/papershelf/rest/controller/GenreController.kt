@@ -54,4 +54,26 @@ class GenreController(@Autowired val genreService: GenreService) {
             ResponseEntity(message, HttpStatus.BAD_REQUEST)
         }
     }
+
+    @PutMapping(value = ["/{genreId}"], consumes = ["application/json"])
+    fun updateGenreById(@PathVariable("genreId") genreId: String,
+                        @RequestBody body: Genre): ResponseEntity<Any> {
+        return try {
+            val genre = genreService.findById(genreId)
+
+            genre.name = body.name
+            genre.description = body.description
+            genreService.save(genre)
+            ResponseEntity(HttpStatus.OK)
+        } catch (e: EntityException) {
+            val message = Message(status = 400, error = "Bad Request", message = e.message)
+            ResponseEntity(message, HttpStatus.BAD_REQUEST)
+        }
+    }
+
+    @DeleteMapping("/{genreId}")
+    fun deleteGenreById(@PathVariable("genreId") genreId: String): ResponseEntity<Any> {
+        genreService.deleteById(genreId)
+        return ResponseEntity(HttpStatus.OK)
+    }
 }
