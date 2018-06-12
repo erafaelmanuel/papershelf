@@ -59,6 +59,7 @@ class AuthorController(val authorService: AuthorService) {
                          @RequestBody body: Author): ResponseEntity<Any> {
         return try {
             val author = authorService.findById(authorId)
+
             author.name = body.name
             authorService.save(author)
             ResponseEntity(HttpStatus.OK)
