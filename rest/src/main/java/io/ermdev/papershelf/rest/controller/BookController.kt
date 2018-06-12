@@ -30,10 +30,29 @@ class BookController(@Autowired val bookService: BookService,
                      @Autowired val genreService: GenreService) {
 
     @GetMapping
-    fun getBooks(@RequestParam(value = "authorId", required = false) authorId: String?): ResponseEntity<Any> {
+    fun getBooks(@RequestParam(value = "authorId", required = false) authorId: String?,
+                 @RequestParam(value = "genreId", required = false) genreId: String?): ResponseEntity<Any> {
         val resources = ArrayList<BookDto>()
-        if (!StringUtils.isEmpty(authorId)) {
+        if (!StringUtils.isEmpty(authorId) && !StringUtils.isEmpty(genreId)) {
+            bookService.findByAuthorIdAndGenreId(authorId!!, genreId!!).forEach({ book ->
+                val dto = BookDto(id = book.id, title = book.title)
+
+                dto.add(getSelfLink(book.id))
+                dto.add(getAuthorLink(book.id))
+                dto.add(getGenreLink(book.id))
+                resources.add(dto)
+            })
+        } else if (!StringUtils.isEmpty(authorId)) {
             bookService.findByAuthorId(authorId!!).forEach({ book ->
+                val dto = BookDto(id = book.id, title = book.title)
+
+                dto.add(getSelfLink(book.id))
+                dto.add(getAuthorLink(book.id))
+                dto.add(getGenreLink(book.id))
+                resources.add(dto)
+            })
+        } else if (!StringUtils.isEmpty(genreId)) {
+            bookService.findByGenreId(genreId!!).forEach({ book ->
                 val dto = BookDto(id = book.id, title = book.title)
 
                 dto.add(getSelfLink(book.id))

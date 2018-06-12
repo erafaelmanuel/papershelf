@@ -20,6 +20,12 @@ class BookService(@Autowired val bookRepository: BookRepository) {
 
     fun findByAuthorId(authorId: String): List<Book> = bookRepository.findByAuthorId(authorId)
 
+    fun findByGenreId(genreId: String): List<Book> = bookRepository.findByGenreId(genreId)
+
+    fun findByAuthorIdAndGenreId(authorId: String, genreId: String): List<Book> {
+        return bookRepository.findByAuthorIdAndGenreId(authorId, genreId)
+    }
+
     fun save(book: Book) {
         if (StringUtils.isEmpty(book.title)) {
             throw EntityException("title cannot be empty")

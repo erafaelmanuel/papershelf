@@ -9,4 +9,12 @@ interface BookRepository : JpaRepository<Book, String> {
 
     @Query("select T1 from Book as T1 join T1.author as T2 where T2.id=:authorId")
     fun findByAuthorId(@Param("authorId") authorId: String): List<Book>
+
+    @Query("select T1 from Book as T1 join T1.genres as T2 where T2.id=:genreId")
+    fun findByGenreId(@Param("genreId") genreId: String): List<Book>
+
+    @Query("select T1 from Book as T1 join T1.author as T2 join T1.genres as T3 where T2.id=:authorId " +
+            "and T3.id=:genreId")
+    fun findByAuthorIdAndGenreId(@Param("authorId") authorId: String,
+                                 @Param("genreId") genreId: String): List<Book>
 }
