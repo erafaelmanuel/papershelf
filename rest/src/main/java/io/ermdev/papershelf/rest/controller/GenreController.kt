@@ -18,7 +18,7 @@ import org.springframework.web.bind.annotation.*
 @RequestMapping("/genres")
 class GenreController(@Autowired val genreService: GenreService) {
 
-    @GetMapping
+    @GetMapping(produces = ["application/json"])
     fun getGenres(): ResponseEntity<Any> {
         val resources = ArrayList<GenreDto>()
         genreService.findAll().forEach({ genre ->
@@ -30,7 +30,7 @@ class GenreController(@Autowired val genreService: GenreService) {
         return ResponseEntity(Resources(resources, linkTo(this::class.java).withSelfRel()), HttpStatus.OK)
     }
 
-    @GetMapping("/{genreId}")
+    @GetMapping(value = ["/{genreId}"], produces = ["application/json"])
     fun getGenreById(@PathVariable("genreId") genreId: String): ResponseEntity<Any> {
         return try {
             val genre = genreService.findById(genreId)
@@ -44,7 +44,7 @@ class GenreController(@Autowired val genreService: GenreService) {
         }
     }
 
-    @PostMapping
+    @PostMapping(consumes = ["application/json"])
     fun addGenre(@RequestBody body: Genre): ResponseEntity<Any> {
         return try {
             genreService.save(body)

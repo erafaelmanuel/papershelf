@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.*
 @RequestMapping("/authors")
 class AuthorController(val authorService: AuthorService) {
 
-    @GetMapping
+    @GetMapping(produces = ["application/json"])
     fun getAuthors(): ResponseEntity<Any> {
         val resources = ArrayList<AuthorDto>()
         authorService.findAll().forEach({ author ->
@@ -29,7 +29,7 @@ class AuthorController(val authorService: AuthorService) {
         return ResponseEntity(Resources(resources, linkTo(this::class.java).withSelfRel()), HttpStatus.OK)
     }
 
-    @GetMapping("/{authorId}")
+    @GetMapping(value = ["/{authorId}"], produces = ["application/json"])
     fun getAuthorById(@PathVariable("authorId") authorId: String): ResponseEntity<Any> {
         return try {
             val author = authorService.findById(authorId)
@@ -43,7 +43,7 @@ class AuthorController(val authorService: AuthorService) {
         }
     }
 
-    @PostMapping
+    @PostMapping(consumes = ["application/json"])
     fun addAuthor(@RequestBody body: Author): ResponseEntity<Any> {
         return try {
             authorService.save(body)
@@ -54,7 +54,7 @@ class AuthorController(val authorService: AuthorService) {
         }
     }
 
-    @PutMapping("/{authorId}")
+    @PutMapping(value = ["/{authorId}"], consumes = ["application/json"])
     fun updateAuthorById(@PathVariable("authorId") authorId: String,
                          @RequestBody body: Author): ResponseEntity<Any> {
         return try {

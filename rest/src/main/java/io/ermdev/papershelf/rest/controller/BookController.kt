@@ -29,14 +29,14 @@ class BookController(@Autowired val bookService: BookService,
                      @Autowired val authorService: AuthorService,
                      @Autowired val genreService: GenreService) {
 
-    @GetMapping
+    @GetMapping(produces = ["application/json"])
     fun getBooks(@RequestParam(value = "authorId", required = false) authorId: String?,
                  @RequestParam(value = "genreId", required = false) genreId: String?): ResponseEntity<Any> {
         val resources = ArrayList<BookDto>()
         if (!StringUtils.isEmpty(authorId) && !StringUtils.isEmpty(genreId)) {
             bookService.findByAuthorIdAndGenreId(authorId!!, genreId!!).forEach({ book ->
                 val dto = BookDto(id = book.id, title = book.title, status = book.status,
-                        summary = book.summary, coverImage = book.coverImage)
+                        summary = book.summary, thumbnail = book.thumbnail)
 
                 dto.add(getSelfLink(book.id))
                 dto.add(getAuthorLink(book.id))
@@ -46,7 +46,7 @@ class BookController(@Autowired val bookService: BookService,
         } else if (!StringUtils.isEmpty(authorId)) {
             bookService.findByAuthorId(authorId!!).forEach({ book ->
                 val dto = BookDto(id = book.id, title = book.title, status = book.status,
-                        summary = book.summary, coverImage = book.coverImage)
+                        summary = book.summary, thumbnail = book.thumbnail)
 
                 dto.add(getSelfLink(book.id))
                 dto.add(getAuthorLink(book.id))
@@ -56,7 +56,7 @@ class BookController(@Autowired val bookService: BookService,
         } else if (!StringUtils.isEmpty(genreId)) {
             bookService.findByGenreId(genreId!!).forEach({ book ->
                 val dto = BookDto(id = book.id, title = book.title, status = book.status,
-                        summary = book.summary, coverImage = book.coverImage)
+                        summary = book.summary, thumbnail = book.thumbnail)
 
                 dto.add(getSelfLink(book.id))
                 dto.add(getAuthorLink(book.id))
@@ -66,7 +66,7 @@ class BookController(@Autowired val bookService: BookService,
         } else {
             bookService.findAll().forEach({ book ->
                 val dto = BookDto(id = book.id, title = book.title, status = book.status,
-                        summary = book.summary, coverImage = book.coverImage)
+                        summary = book.summary, thumbnail = book.thumbnail)
 
                 dto.add(getSelfLink(book.id))
                 dto.add(getAuthorLink(book.id))
@@ -77,12 +77,12 @@ class BookController(@Autowired val bookService: BookService,
         return ResponseEntity(Resources(resources, linkTo(this::class.java).withSelfRel()), HttpStatus.OK)
     }
 
-    @GetMapping("/{bookId}")
+    @GetMapping(value = ["/{bookId}"], produces = ["application/json"])
     fun getBookById(@PathVariable("bookId") bookId: String): ResponseEntity<Any> {
         return try {
             val book = bookService.findById(bookId)
             val dto = BookDto(id = book.id, title = book.title, status = book.status,
-                    summary = book.summary, coverImage = book.coverImage)
+                    summary = book.summary, thumbnail = book.thumbnail)
 
             dto.add(getSelfLink(book.id))
             dto.add(getAuthorLink(book.id))
@@ -94,7 +94,7 @@ class BookController(@Autowired val bookService: BookService,
         }
     }
 
-    @GetMapping("/{bookId}/authors")
+    @GetMapping(value = ["/{bookId}/authors"], produces = ["application/json"])
     fun getAuthors(@PathVariable("bookId") bookId: String): ResponseEntity<Any> {
         return try {
             val resources = ArrayList<AuthorDto>()
@@ -111,7 +111,7 @@ class BookController(@Autowired val bookService: BookService,
         }
     }
 
-    @GetMapping("/{bookId}/genres")
+    @GetMapping(value = ["/{bookId}/genres"], produces = ["application/json"])
     fun getGenres(@PathVariable("bookId") bookId: String): ResponseEntity<Any> {
         return try {
             val resources = ArrayList<GenreDto>()
@@ -128,7 +128,7 @@ class BookController(@Autowired val bookService: BookService,
         }
     }
 
-    @PostMapping
+    @PostMapping(consumes = ["application/json"])
     fun addBook(@RequestBody body: Book): ResponseEntity<Any> {
         return try {
             bookService.save(body)
@@ -171,7 +171,7 @@ class BookController(@Autowired val bookService: BookService,
         }
     }
 
-    @PutMapping("/{bookId}")
+    @PutMapping(value = ["/{bookId}"], consumes = ["application/json"])
     fun updateBookById(@PathVariable("bookId") bookId: String, @RequestBody body: Book): ResponseEntity<Any> {
         return try {
             val book = bookService.findById(bookId)
@@ -179,7 +179,7 @@ class BookController(@Autowired val bookService: BookService,
             book.title = body.title
             book.status = body.status
             book.summary = body.summary
-            book.coverImage = body.coverImage
+            book.thumbnail = body.thumbnail
             bookService.save(book)
             ResponseEntity(HttpStatus.OK)
         } catch (e: EntityException) {

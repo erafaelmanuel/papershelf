@@ -17,8 +17,8 @@ class Book(@Id
            @Column(name = "_summary", length = 500)
            var summary: String = "",
 
-           @Column(name = "cover_image")
-           var coverImage: String = "",
+           @Column(name = "thumbnail")
+           var thumbnail: String = "",
 
            @ManyToMany(cascade = [CascadeType.ALL])
            @JoinTable(name = "tbl_book_author", joinColumns = [JoinColumn(name = "book_id")],
