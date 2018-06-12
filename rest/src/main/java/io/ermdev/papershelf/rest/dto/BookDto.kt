@@ -7,4 +7,5 @@ import org.springframework.hateoas.core.Relation
 class BookDto(var id: String = "",
               var title: String = "",
               var status: String = "",
-              var summary: String = "") : ResourceSupport()
+              var summary: String = "",
+              var coverImage: String = "") : ResourceSupport()

@@ -33,6 +33,12 @@ class BookService(@Autowired val bookRepository: BookRepository) {
         if (!book.title.matches(Regex("^[a-zA-Z0-9]+( [a-zA-Z0-9]+)*$"))) {
             throw EntityException("title cannot contain special characters")
         }
+        if (StringUtils.isEmpty(book.status)) {
+            throw EntityException("status cannot be empty")
+        }
+        if (!book.status.matches(Regex("^[a-zA-Z0-9]+( [a-zA-Z0-9]+)*$"))) {
+            throw EntityException("status cannot contain special characters")
+        }
         if (StringUtils.isEmpty(book.id)) {
             book.id = UUID.randomUUID().toString()
         }

@@ -35,7 +35,8 @@ class BookController(@Autowired val bookService: BookService,
         val resources = ArrayList<BookDto>()
         if (!StringUtils.isEmpty(authorId) && !StringUtils.isEmpty(genreId)) {
             bookService.findByAuthorIdAndGenreId(authorId!!, genreId!!).forEach({ book ->
-                val dto = BookDto(id = book.id, title = book.title)
+                val dto = BookDto(id = book.id, title = book.title, status = book.status,
+                        summary = book.summary, coverImage = book.coverImage)
 
                 dto.add(getSelfLink(book.id))
                 dto.add(getAuthorLink(book.id))
@@ -44,7 +45,8 @@ class BookController(@Autowired val bookService: BookService,
             })
         } else if (!StringUtils.isEmpty(authorId)) {
             bookService.findByAuthorId(authorId!!).forEach({ book ->
-                val dto = BookDto(id = book.id, title = book.title)
+                val dto = BookDto(id = book.id, title = book.title, status = book.status,
+                        summary = book.summary, coverImage = book.coverImage)
 
                 dto.add(getSelfLink(book.id))
                 dto.add(getAuthorLink(book.id))
@@ -53,7 +55,8 @@ class BookController(@Autowired val bookService: BookService,
             })
         } else if (!StringUtils.isEmpty(genreId)) {
             bookService.findByGenreId(genreId!!).forEach({ book ->
-                val dto = BookDto(id = book.id, title = book.title)
+                val dto = BookDto(id = book.id, title = book.title, status = book.status,
+                        summary = book.summary, coverImage = book.coverImage)
 
                 dto.add(getSelfLink(book.id))
                 dto.add(getAuthorLink(book.id))
@@ -62,7 +65,8 @@ class BookController(@Autowired val bookService: BookService,
             })
         } else {
             bookService.findAll().forEach({ book ->
-                val dto = BookDto(id = book.id, title = book.title)
+                val dto = BookDto(id = book.id, title = book.title, status = book.status,
+                        summary = book.summary, coverImage = book.coverImage)
 
                 dto.add(getSelfLink(book.id))
                 dto.add(getAuthorLink(book.id))
@@ -77,7 +81,8 @@ class BookController(@Autowired val bookService: BookService,
     fun getBookById(@PathVariable("bookId") bookId: String): ResponseEntity<Any> {
         return try {
             val book = bookService.findById(bookId)
-            val dto = BookDto(id = book.id, title = book.title)
+            val dto = BookDto(id = book.id, title = book.title, status = book.status,
+                    summary = book.summary, coverImage = book.coverImage)
 
             dto.add(getSelfLink(book.id))
             dto.add(getAuthorLink(book.id))
@@ -172,6 +177,9 @@ class BookController(@Autowired val bookService: BookService,
             val book = bookService.findById(bookId)
 
             book.title = body.title
+            book.status = body.status
+            book.summary = body.summary
+            book.coverImage = body.coverImage
             bookService.save(book)
             ResponseEntity(HttpStatus.OK)
         } catch (e: EntityException) {
