@@ -90,18 +90,16 @@ class BookController(@Autowired val bookService: BookService,
     }
 
     @GetMapping("/{bookId}/authors")
-    fun getAuthor(@PathVariable("bookId") bookId: String): ResponseEntity<Any> {
+    fun getAuthors(@PathVariable("bookId") bookId: String): ResponseEntity<Any> {
         return try {
-            val book = bookService.findById(bookId)
-            val author = book.author
-            if (author != null) {
+            val resources = ArrayList<AuthorDto>()
+            bookService.findById(bookId).authors.forEach({ author ->
                 val dto = AuthorDto(id = author.id, name = author.name)
 
                 dto.add(AuthorHateoas.getSelfLink(author.id))
-                ResponseEntity(Resource(dto), HttpStatus.OK)
-            } else {
-                ResponseEntity(HttpStatus.NOT_FOUND)
-            }
+                resources.add(dto)
+            })
+            ResponseEntity(Resources(resources, linkTo(this::class.java).withSelfRel()), HttpStatus.OK)
         } catch (e: EntityException) {
             val message = Message(status = 404, error = "Not Found", message = e.message)
             ResponseEntity(message, HttpStatus.NOT_FOUND)
@@ -129,6 +127,22 @@ class BookController(@Autowired val bookService: BookService,
     fun addBook(@RequestBody body: Book): ResponseEntity<Any> {
         return try {
             bookService.save(body)
+            ResponseEntity(HttpStatus.CREATED)
+        } catch (e: EntityException) {
+            val message = Message(status = 400, error = "Bad Request", message = e.message)
+            ResponseEntity(message, HttpStatus.BAD_REQUEST)
+        }
+    }
+
+    @PostMapping("/{bookId}/authors/{authorId}")
+    fun addAuthor(@PathVariable("bookId") bookId: String,
+                  @PathVariable("authorId") authorId: String): ResponseEntity<Any> {
+        return try {
+            val book = bookService.findById(bookId)
+            val author = authorService.findById(authorId)
+
+            book.authors.add(author)
+            bookService.save(book)
             ResponseEntity(HttpStatus.CREATED)
         } catch (e: EntityException) {
             val message = Message(status = 400, error = "Bad Request", message = e.message)
@@ -166,21 +180,6 @@ class BookController(@Autowired val bookService: BookService,
         }
     }
 
-    @PutMapping("/{bookId}/authors/{authorId}")
-    fun updateAuthor(@PathVariable("bookId") bookId: String,
-                     @PathVariable("authorId") authorId: String): ResponseEntity<Any> {
-        return try {
-            val book = bookService.findById(bookId)
-
-            book.author = authorService.findById(authorId)
-            bookService.save(book)
-            ResponseEntity(HttpStatus.OK)
-        } catch (e: EntityException) {
-            val message = Message(status = 400, error = "Bad Request", message = e.message)
-            ResponseEntity(message, HttpStatus.BAD_REQUEST)
-        }
-    }
-
     @DeleteMapping("/{bookId}")
     fun deleteBookById(@PathVariable("bookId") bookId: String): ResponseEntity<Any> {
         bookService.deleteById(bookId)
@@ -188,11 +187,13 @@ class BookController(@Autowired val bookService: BookService,
     }
 
     @DeleteMapping("/{bookId}/authors")
-    fun deleteAuthor(@PathVariable("bookId") bookId: String): ResponseEntity<Any> {
+    fun deleteAuthor(@PathVariable("bookId") bookId: String,
+                     @PathVariable("authorId") authorId: String): ResponseEntity<Any> {
         return try {
             val book = bookService.findById(bookId)
+            val author = authorService.findById(authorId)
 
-            book.author = null
+            book.authors.remove(author)
             bookService.save(book)
             ResponseEntity(HttpStatus.OK)
         } catch (e: EntityException) {

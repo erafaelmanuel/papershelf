@@ -11,5 +11,5 @@ class Author(@Id
              @Column(name = "_name")
              var name: String = "",
 
-             @OneToMany(mappedBy = "author", cascade = [CascadeType.REMOVE])
+             @ManyToMany(mappedBy = "authors")
              var books: MutableSet<Book> = HashSet())
