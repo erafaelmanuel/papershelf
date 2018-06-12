@@ -14,8 +14,9 @@ class GenreService(@Autowired val genreRepository: GenreRepository) {
     fun findAll(): List<Genre> = genreRepository.findAll()
 
     fun findById(id: String): Genre {
-        return genreRepository.findById(id)
-                .orElseThrow { EntityException("No genre with id '$id' exists!") }
+        return genreRepository.findById(id).orElseThrow({
+            EntityException("No genre with id '$id' exists!")
+        })
     }
 
     fun save(genre: Genre) {

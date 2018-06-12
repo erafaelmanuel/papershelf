@@ -14,8 +14,9 @@ class BookService(@Autowired val bookRepository: BookRepository) {
     fun findAll(): List<Book> = bookRepository.findAll()
 
     fun findById(id: String): Book {
-        return bookRepository.findById(id)
-                .orElseThrow { EntityException("No book with id '$id' exists!") }
+        return bookRepository.findById(id).orElseThrow({
+            EntityException("No book with id '$id' exists!")
+        })
     }
 
     fun findByAuthorId(authorId: String): List<Book> = bookRepository.findByAuthorId(authorId)

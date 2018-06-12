@@ -13,8 +13,9 @@ class AuthorService(val authorRepository: AuthorRepository) {
     fun findAll(): List<Author> = authorRepository.findAll()
 
     fun findById(id: String): Author {
-        return authorRepository.findById(id)
-                .orElseThrow { EntityException("No author with id '$id' exists!") }
+        return authorRepository.findById(id).orElseThrow({
+            EntityException("No author with id '$id' exists!")
+        })
     }
 
     fun save(author: Author) {
