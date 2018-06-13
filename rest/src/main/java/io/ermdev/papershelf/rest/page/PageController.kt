@@ -1,10 +1,9 @@
-package io.ermdev.papershelf.rest.controller
+package io.ermdev.papershelf.rest.page
 
-import io.ermdev.papershelf.data.entity.Author
-import io.ermdev.papershelf.data.service.AuthorService
+import io.ermdev.papershelf.data.entity.Page
+import io.ermdev.papershelf.data.service.PageService
 import io.ermdev.papershelf.exception.EntityException
 import io.ermdev.papershelf.rest.Message
-import io.ermdev.papershelf.rest.dto.AuthorDto
 import org.springframework.hateoas.Resource
 import org.springframework.hateoas.Resources
 import org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo
@@ -14,28 +13,28 @@ import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 
 @RestController
-@RequestMapping("/authors")
-class AuthorController(val authorService: AuthorService) {
+@RequestMapping("/pages")
+class PageController(val pageService: PageService) {
 
     @GetMapping(produces = ["application/json"])
-    fun getAuthors(): ResponseEntity<Any> {
-        val resources = ArrayList<AuthorDto>()
-        authorService.findAll().forEach({ author ->
-            val dto = AuthorDto(id = author.id, name = author.name)
+    fun getPages(): ResponseEntity<Any> {
+        val resources = ArrayList<PageDto>()
+        pageService.findAll().forEach({ page ->
+            val dto = PageDto(id = page.id, number = page.number, image = page.image)
 
-            dto.add(linkTo(methodOn(this::class.java).getAuthorById(author.id)).withSelfRel())
+            dto.add(linkTo(methodOn(this::class.java).getPageById(page.id)).withSelfRel())
             resources.add(dto)
         })
         return ResponseEntity(Resources(resources, linkTo(this::class.java).withSelfRel()), HttpStatus.OK)
     }
 
-    @GetMapping(value = ["/{authorId}"], produces = ["application/json"])
-    fun getAuthorById(@PathVariable("authorId") authorId: String): ResponseEntity<Any> {
+    @GetMapping(value = ["/{pageId}"], produces = ["application/json"])
+    fun getPageById(@PathVariable("pageId") pageId: String): ResponseEntity<Any> {
         return try {
-            val author = authorService.findById(authorId)
-            val dto = AuthorDto(id = author.id, name = author.name)
+            val page = pageService.findById(pageId)
+            val dto = PageDto(id = page.id, number = page.number, image = page.image)
 
-            dto.add(linkTo(methodOn(this::class.java).getAuthorById(author.id)).withSelfRel())
+            dto.add(linkTo(methodOn(this::class.java).getPageById(page.id)).withSelfRel())
             ResponseEntity(Resource(dto), HttpStatus.OK)
         } catch (e: EntityException) {
             val message = Message(status = 404, error = "Not Found", message = e.message)
@@ -44,9 +43,9 @@ class AuthorController(val authorService: AuthorService) {
     }
 
     @PostMapping(consumes = ["application/json"])
-    fun addAuthor(@RequestBody body: Author): ResponseEntity<Any> {
+    fun addPage(@RequestBody body: Page): ResponseEntity<Any> {
         return try {
-            authorService.save(body)
+            pageService.save(body)
             ResponseEntity(HttpStatus.CREATED)
         } catch (e: EntityException) {
             val message = Message(status = 400, error = "Bad Request", message = e.message)
@@ -54,14 +53,15 @@ class AuthorController(val authorService: AuthorService) {
         }
     }
 
-    @PutMapping(value = ["/{authorId}"], consumes = ["application/json"])
-    fun updateAuthorById(@PathVariable("authorId") authorId: String,
-                         @RequestBody body: Author): ResponseEntity<Any> {
+    @PutMapping(value = ["/{pageId}"], consumes = ["application/json"])
+    fun updatePageById(@PathVariable("pageId") pageId: String,
+                       @RequestBody body: Page): ResponseEntity<Any> {
         return try {
-            val author = authorService.findById(authorId)
+            val page = pageService.findById(pageId)
 
-            author.name = body.name
-            authorService.save(author)
+            page.number = body.number
+            page.image = body.image
+            pageService.save(page)
             ResponseEntity(HttpStatus.OK)
         } catch (e: EntityException) {
             val message = Message(status = 400, error = "Bad Request", message = e.message)
@@ -69,9 +69,9 @@ class AuthorController(val authorService: AuthorService) {
         }
     }
 
-    @DeleteMapping("/{authorId}")
-    fun deleteAuthorById(@PathVariable("authorId") authorId: String): ResponseEntity<Any> {
-        authorService.deleteById(authorId)
+    @DeleteMapping("/{pageId}")
+    fun deletePageById(@PathVariable("pageId") pageId: String): ResponseEntity<Any> {
+        pageService.deleteById(pageId)
         return ResponseEntity(HttpStatus.OK)
     }
 

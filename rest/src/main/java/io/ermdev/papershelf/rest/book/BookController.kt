@@ -1,4 +1,4 @@
-package io.ermdev.papershelf.rest.controller
+package io.ermdev.papershelf.rest.book
 
 import io.ermdev.papershelf.data.entity.Book
 import io.ermdev.papershelf.data.service.AuthorService
@@ -6,9 +6,10 @@ import io.ermdev.papershelf.data.service.BookService
 import io.ermdev.papershelf.data.service.GenreService
 import io.ermdev.papershelf.exception.EntityException
 import io.ermdev.papershelf.rest.Message
-import io.ermdev.papershelf.rest.dto.AuthorDto
-import io.ermdev.papershelf.rest.dto.BookDto
-import io.ermdev.papershelf.rest.dto.GenreDto
+import io.ermdev.papershelf.rest.author.AuthorController
+import io.ermdev.papershelf.rest.author.AuthorDto
+import io.ermdev.papershelf.rest.genre.GenreController
+import io.ermdev.papershelf.rest.genre.GenreDto
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.hateoas.Resource
 import org.springframework.hateoas.Resources

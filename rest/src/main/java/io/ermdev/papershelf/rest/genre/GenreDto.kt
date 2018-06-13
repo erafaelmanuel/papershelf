@@ -1,4 +1,4 @@
-package io.ermdev.papershelf.rest.dto
+package io.ermdev.papershelf.rest.genre
 
 import org.springframework.hateoas.ResourceSupport
 import org.springframework.hateoas.core.Relation

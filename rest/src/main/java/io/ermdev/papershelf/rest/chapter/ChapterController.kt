@@ -1,10 +1,9 @@
-package io.ermdev.papershelf.rest.controller
+package io.ermdev.papershelf.rest.chapter
 
 import io.ermdev.papershelf.data.entity.Chapter
 import io.ermdev.papershelf.data.service.ChapterService
 import io.ermdev.papershelf.exception.EntityException
 import io.ermdev.papershelf.rest.Message
-import io.ermdev.papershelf.rest.dto.ChapterDto
 import org.springframework.hateoas.Resource
 import org.springframework.hateoas.Resources
 import org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo

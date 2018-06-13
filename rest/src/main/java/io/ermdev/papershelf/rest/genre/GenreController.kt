@@ -1,10 +1,9 @@
-package io.ermdev.papershelf.rest.controller
+package io.ermdev.papershelf.rest.genre
 
 import io.ermdev.papershelf.data.entity.Genre
 import io.ermdev.papershelf.data.service.GenreService
 import io.ermdev.papershelf.exception.EntityException
 import io.ermdev.papershelf.rest.Message
-import io.ermdev.papershelf.rest.dto.GenreDto
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.hateoas.Resource
 import org.springframework.hateoas.Resources

@@ -15,5 +15,5 @@ class Page(@Id
            var image: String = "",
 
            @ManyToOne(cascade = [CascadeType.ALL])
-           @JoinColumn(name = "chapter_id", nullable = true)
+           @JoinColumn(name = "chapter_id", nullable = false)
            var chapter: Chapter = Chapter())
