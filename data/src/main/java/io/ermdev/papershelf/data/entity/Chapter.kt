@@ -16,4 +16,8 @@ class Chapter(@Id
               var uploadDate: Timestamp = Timestamp(System.currentTimeMillis()),
 
               @OneToMany(mappedBy = "chapter")
-              var pages: MutableSet<Page> = HashSet())
+              var pages: MutableSet<Page> = HashSet(),
+
+              @ManyToOne(cascade = [CascadeType.PERSIST])
+              @JoinColumn(name = "book_id")
+              var book: Book = Book())

@@ -17,7 +17,7 @@ class Book(@Id
            @Column(name = "_summary", length = 500)
            var summary: String = "",
 
-           @Column(name = "thumbnail")
+           @Column(name = "_thumbnail")
            var thumbnail: String = "",
 
            @ManyToMany(cascade = [CascadeType.ALL])
@@ -28,4 +28,7 @@ class Book(@Id
            @ManyToMany(cascade = [CascadeType.ALL])
            @JoinTable(name = "tbl_book_genre", joinColumns = [JoinColumn(name = "book_id")],
                    inverseJoinColumns = [JoinColumn(name = "genre_id")])
-           var genres: MutableSet<Genre> = HashSet())
+           var genres: MutableSet<Genre> = HashSet(),
+
+           @OneToMany(mappedBy = "book")
+           var chapters: MutableSet<Chapter> = HashSet())
