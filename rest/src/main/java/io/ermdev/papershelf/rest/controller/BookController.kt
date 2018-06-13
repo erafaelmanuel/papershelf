@@ -9,15 +9,11 @@ import io.ermdev.papershelf.rest.Message
 import io.ermdev.papershelf.rest.dto.AuthorDto
 import io.ermdev.papershelf.rest.dto.BookDto
 import io.ermdev.papershelf.rest.dto.GenreDto
-import io.ermdev.papershelf.rest.hateoas.AuthorHateoas
-import io.ermdev.papershelf.rest.hateoas.BookHateoas.Companion.getAuthorLink
-import io.ermdev.papershelf.rest.hateoas.BookHateoas.Companion.getGenreLink
-import io.ermdev.papershelf.rest.hateoas.BookHateoas.Companion.getSelfLink
-import io.ermdev.papershelf.rest.hateoas.GenreHateoas
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.hateoas.Resource
 import org.springframework.hateoas.Resources
 import org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo
+import org.springframework.hateoas.mvc.ControllerLinkBuilder.methodOn
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.util.StringUtils
@@ -38,9 +34,9 @@ class BookController(@Autowired val bookService: BookService,
                 val dto = BookDto(id = book.id, title = book.title, status = book.status,
                         summary = book.summary, thumbnail = book.thumbnail)
 
-                dto.add(getSelfLink(book.id))
-                dto.add(getAuthorLink(book.id))
-                dto.add(getGenreLink(book.id))
+                dto.add(linkTo(methodOn(this::class.java).getBookById(book.id)).withSelfRel())
+                dto.add(linkTo(methodOn(this::class.java).getAuthors(book.id)).withRel("authors"))
+                dto.add(linkTo(methodOn(this::class.java).getGenres(book.id)).withRel("genres"))
                 resources.add(dto)
             })
         } else if (!StringUtils.isEmpty(authorId)) {
@@ -48,9 +44,9 @@ class BookController(@Autowired val bookService: BookService,
                 val dto = BookDto(id = book.id, title = book.title, status = book.status,
                         summary = book.summary, thumbnail = book.thumbnail)
 
-                dto.add(getSelfLink(book.id))
-                dto.add(getAuthorLink(book.id))
-                dto.add(getGenreLink(book.id))
+                dto.add(linkTo(methodOn(this::class.java).getBookById(book.id)).withSelfRel())
+                dto.add(linkTo(methodOn(this::class.java).getAuthors(book.id)).withRel("authors"))
+                dto.add(linkTo(methodOn(this::class.java).getGenres(book.id)).withRel("genres"))
                 resources.add(dto)
             })
         } else if (!StringUtils.isEmpty(genreId)) {
@@ -58,9 +54,9 @@ class BookController(@Autowired val bookService: BookService,
                 val dto = BookDto(id = book.id, title = book.title, status = book.status,
                         summary = book.summary, thumbnail = book.thumbnail)
 
-                dto.add(getSelfLink(book.id))
-                dto.add(getAuthorLink(book.id))
-                dto.add(getGenreLink(book.id))
+                dto.add(linkTo(methodOn(this::class.java).getBookById(book.id)).withSelfRel())
+                dto.add(linkTo(methodOn(this::class.java).getAuthors(book.id)).withRel("authors"))
+                dto.add(linkTo(methodOn(this::class.java).getGenres(book.id)).withRel("genres"))
                 resources.add(dto)
             })
         } else {
@@ -68,9 +64,9 @@ class BookController(@Autowired val bookService: BookService,
                 val dto = BookDto(id = book.id, title = book.title, status = book.status,
                         summary = book.summary, thumbnail = book.thumbnail)
 
-                dto.add(getSelfLink(book.id))
-                dto.add(getAuthorLink(book.id))
-                dto.add(getGenreLink(book.id))
+                dto.add(linkTo(methodOn(this::class.java).getBookById(book.id)).withSelfRel())
+                dto.add(linkTo(methodOn(this::class.java).getAuthors(book.id)).withRel("authors"))
+                dto.add(linkTo(methodOn(this::class.java).getGenres(book.id)).withRel("genres"))
                 resources.add(dto)
             })
         }
@@ -84,9 +80,9 @@ class BookController(@Autowired val bookService: BookService,
             val dto = BookDto(id = book.id, title = book.title, status = book.status,
                     summary = book.summary, thumbnail = book.thumbnail)
 
-            dto.add(getSelfLink(book.id))
-            dto.add(getAuthorLink(book.id))
-            dto.add(getGenreLink(book.id))
+            dto.add(linkTo(methodOn(this::class.java).getBookById(book.id)).withSelfRel())
+            dto.add(linkTo(methodOn(this::class.java).getAuthors(book.id)).withRel("authors"))
+            dto.add(linkTo(methodOn(this::class.java).getGenres(book.id)).withRel("genres"))
             ResponseEntity(Resource(dto), HttpStatus.OK)
         } catch (e: EntityException) {
             val message = Message(status = 404, error = "Not Found", message = e.message)
@@ -101,10 +97,11 @@ class BookController(@Autowired val bookService: BookService,
             bookService.findById(bookId).authors.forEach({ author ->
                 val dto = AuthorDto(id = author.id, name = author.name)
 
-                dto.add(AuthorHateoas.getSelfLink(author.id))
+                dto.add(linkTo(methodOn(AuthorController::class.java).getAuthorById(author.id)).withSelfRel())
                 resources.add(dto)
             })
-            ResponseEntity(Resources(resources, linkTo(this::class.java).withSelfRel()), HttpStatus.OK)
+            ResponseEntity(Resources(resources, linkTo(methodOn(this::class.java).getAuthors(bookId))
+                    .withRel("authors")), HttpStatus.OK)
         } catch (e: EntityException) {
             val message = Message(status = 404, error = "Not Found", message = e.message)
             ResponseEntity(message, HttpStatus.NOT_FOUND)
@@ -118,10 +115,11 @@ class BookController(@Autowired val bookService: BookService,
             bookService.findById(bookId).genres.forEach({ genre ->
                 val dto = GenreDto(id = genre.id, name = genre.name, description = genre.description)
 
-                dto.add(GenreHateoas.getSelfLink(genre.id))
+                dto.add(linkTo(methodOn(GenreController::class.java).getGenreById(genre.id)).withSelfRel())
                 resources.add(dto)
             })
-            return ResponseEntity(Resources(resources, linkTo(this::class.java).withSelfRel()), HttpStatus.OK)
+            return ResponseEntity(Resources(resources, linkTo(methodOn(this::class.java).getGenres(bookId))
+                    .withRel("genres")), HttpStatus.OK)
         } catch (e: EntityException) {
             val message = Message(status = 404, error = "Not Found", message = e.message)
             ResponseEntity(message, HttpStatus.NOT_FOUND)

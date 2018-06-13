@@ -5,10 +5,10 @@ import io.ermdev.papershelf.data.service.ChapterService
 import io.ermdev.papershelf.exception.EntityException
 import io.ermdev.papershelf.rest.Message
 import io.ermdev.papershelf.rest.dto.ChapterDto
-import io.ermdev.papershelf.rest.hateoas.ChapterHateoas.Companion.getSelfLink
 import org.springframework.hateoas.Resource
 import org.springframework.hateoas.Resources
 import org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo
+import org.springframework.hateoas.mvc.ControllerLinkBuilder.methodOn
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
@@ -23,7 +23,7 @@ class ChapterController(val chapterService: ChapterService) {
         chapterService.findAll().forEach({ chapter ->
             val dto = ChapterDto(id = chapter.id, name = chapter.name, uploadDate = chapter.uploadDate)
 
-            dto.add(getSelfLink(chapter.id))
+            dto.add(linkTo(methodOn(this::class.java).getChapterById(chapter.id)).withSelfRel())
             resources.add(dto)
         })
         return ResponseEntity(Resources(resources, linkTo(this::class.java).withSelfRel()), HttpStatus.OK)
@@ -35,7 +35,7 @@ class ChapterController(val chapterService: ChapterService) {
             val chapter = chapterService.findById(chapterId)
             val dto = ChapterDto(id = chapter.id, name = chapter.name, uploadDate = chapter.uploadDate)
 
-            dto.add(getSelfLink(chapter.id))
+            dto.add(linkTo(methodOn(this::class.java).getChapterById(chapter.id)).withSelfRel())
             ResponseEntity(Resource(dto), HttpStatus.OK)
         } catch (e: EntityException) {
             val message = Message(status = 404, error = "Not Found", message = e.message)

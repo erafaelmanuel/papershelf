@@ -5,10 +5,10 @@ import io.ermdev.papershelf.data.service.AuthorService
 import io.ermdev.papershelf.exception.EntityException
 import io.ermdev.papershelf.rest.Message
 import io.ermdev.papershelf.rest.dto.AuthorDto
-import io.ermdev.papershelf.rest.hateoas.AuthorHateoas.Companion.getSelfLink
 import org.springframework.hateoas.Resource
 import org.springframework.hateoas.Resources
 import org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo
+import org.springframework.hateoas.mvc.ControllerLinkBuilder.methodOn
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
@@ -23,7 +23,7 @@ class AuthorController(val authorService: AuthorService) {
         authorService.findAll().forEach({ author ->
             val dto = AuthorDto(id = author.id, name = author.name)
 
-            dto.add(getSelfLink(author.id))
+            dto.add(linkTo(methodOn(this::class.java).getAuthorById(author.id)).withSelfRel())
             resources.add(dto)
         })
         return ResponseEntity(Resources(resources, linkTo(this::class.java).withSelfRel()), HttpStatus.OK)
@@ -35,7 +35,7 @@ class AuthorController(val authorService: AuthorService) {
             val author = authorService.findById(authorId)
             val dto = AuthorDto(id = author.id, name = author.name)
 
-            dto.add(getSelfLink(author.id))
+            dto.add(linkTo(methodOn(this::class.java).getAuthorById(author.id)).withSelfRel())
             ResponseEntity(Resource(dto), HttpStatus.OK)
         } catch (e: EntityException) {
             val message = Message(status = 404, error = "Not Found", message = e.message)
