@@ -25,6 +25,7 @@ class ChapterController(val chapterService: ChapterService) {
             val dto = ChapterDto(id = chapter.id, name = chapter.name, uploadDate = chapter.uploadDate)
 
             dto.add(linkTo(methodOn(this::class.java).getChapterById(chapter.id)).withSelfRel())
+            dto.add(linkTo(methodOn(this::class.java).getPages(chapter.id)).withRel("pages"))
             resources.add(dto)
         })
         return ResponseEntity(Resources(resources, linkTo(this::class.java).withSelfRel()), HttpStatus.OK)
@@ -37,6 +38,7 @@ class ChapterController(val chapterService: ChapterService) {
             val dto = ChapterDto(id = chapter.id, name = chapter.name, uploadDate = chapter.uploadDate)
 
             dto.add(linkTo(methodOn(this::class.java).getChapterById(chapter.id)).withSelfRel())
+            dto.add(linkTo(methodOn(this::class.java).getPages(chapter.id)).withRel("pages"))
             ResponseEntity(Resource(dto), HttpStatus.OK)
         } catch (e: EntityException) {
             val message = Message(status = 404, error = "Not Found", message = e.message)
@@ -44,7 +46,7 @@ class ChapterController(val chapterService: ChapterService) {
         }
     }
 
-    @GetMapping("/{chapterId}/pages")
+    @GetMapping(value = ["/{chapterId}/pages"], produces = ["application/json"])
     fun getPages(@PathVariable("chapterId") chapterId: String): ResponseEntity<Any> {
         return try {
             val resources = ArrayList<PageDto>()
@@ -55,7 +57,7 @@ class ChapterController(val chapterService: ChapterService) {
                 dto.add(linkTo(methodOn(PageController::class.java).getPageById(page.id)).withSelfRel())
                 resources.add(dto)
             })
-            ResponseEntity(Resources(resources, linkTo(methodOn(this::class.java))
+            ResponseEntity(Resources(resources, linkTo(methodOn(this::class.java).getPages(chapterId))
                     .withRel("pages")), HttpStatus.OK)
         } catch (e: EntityException) {
             val message = Message(status = 404, error = "Not Found", message = e.message)
