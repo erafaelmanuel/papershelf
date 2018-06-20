@@ -8,6 +8,8 @@ import io.ermdev.papershelf.exception.EntityException
 import io.ermdev.papershelf.rest.Message
 import io.ermdev.papershelf.rest.author.AuthorController
 import io.ermdev.papershelf.rest.author.AuthorDto
+import io.ermdev.papershelf.rest.chapter.ChapterController
+import io.ermdev.papershelf.rest.chapter.ChapterDto
 import io.ermdev.papershelf.rest.genre.GenreController
 import io.ermdev.papershelf.rest.genre.GenreDto
 import org.springframework.beans.factory.annotation.Autowired
@@ -121,6 +123,24 @@ class BookController(@Autowired val bookService: BookService,
             })
             return ResponseEntity(Resources(resources, linkTo(methodOn(this::class.java).getGenres(bookId))
                     .withRel("genres")), HttpStatus.OK)
+        } catch (e: EntityException) {
+            val message = Message(status = 404, error = "Not Found", message = e.message)
+            ResponseEntity(message, HttpStatus.NOT_FOUND)
+        }
+    }
+
+    @GetMapping(value = ["/{bookId}/chapters"], produces = ["application/json"])
+    fun getChapters(@PathVariable("bookId") bookId: String): ResponseEntity<Any> {
+        return try {
+            val resources = ArrayList<ChapterDto>()
+            bookService.findById(bookId).chapters.forEach({ chapter ->
+                val dto = ChapterDto(id = chapter.id, name = chapter.name, uploadDate = chapter.uploadDate)
+
+                dto.add(linkTo(methodOn(ChapterController::class.java).getChapterById(chapter.id)).withSelfRel())
+                resources.add(dto)
+            })
+            return ResponseEntity(Resources(resources, linkTo(methodOn(this::class.java).getChapters(bookId))
+                    .withRel("chapters")), HttpStatus.OK)
         } catch (e: EntityException) {
             val message = Message(status = 404, error = "Not Found", message = e.message)
             ResponseEntity(message, HttpStatus.NOT_FOUND)
