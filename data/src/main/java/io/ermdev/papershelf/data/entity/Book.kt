@@ -30,5 +30,5 @@ class Book(@Id
                    inverseJoinColumns = [JoinColumn(name = "genre_id")])
            var genres: MutableSet<Genre> = HashSet(),
 
-           @OneToMany(mappedBy = "book")
+           @OneToMany(mappedBy = "book", cascade = [CascadeType.REMOVE])
            var chapters: MutableSet<Chapter> = HashSet())

@@ -21,6 +21,6 @@ class Chapter(@Id
               @OneToMany(mappedBy = "chapter")
               var pages: MutableSet<Page> = HashSet(),
 
-              @ManyToOne(cascade = [CascadeType.PERSIST])
+              @ManyToOne
               @JoinColumn(name = "book_id")
               var book: Book = Book())

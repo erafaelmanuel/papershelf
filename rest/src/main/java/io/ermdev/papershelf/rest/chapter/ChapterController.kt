@@ -1,11 +1,13 @@
 package io.ermdev.papershelf.rest.chapter
 
 import io.ermdev.papershelf.data.entity.Chapter
+import io.ermdev.papershelf.data.service.BookService
 import io.ermdev.papershelf.data.service.ChapterService
 import io.ermdev.papershelf.exception.EntityException
 import io.ermdev.papershelf.rest.Message
 import io.ermdev.papershelf.rest.page.PageController
 import io.ermdev.papershelf.rest.page.PageDto
+import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.hateoas.Resource
 import org.springframework.hateoas.Resources
 import org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo
@@ -16,7 +18,8 @@ import org.springframework.web.bind.annotation.*
 
 @RestController
 @RequestMapping("/chapters")
-class ChapterController(val chapterService: ChapterService) {
+class ChapterController(@Autowired val chapterService: ChapterService,
+                        @Autowired val bookService: BookService) {
 
     @GetMapping(produces = ["application/json"])
     fun getChapters(): ResponseEntity<Any> {
@@ -68,8 +71,9 @@ class ChapterController(val chapterService: ChapterService) {
     }
 
     @PostMapping(consumes = ["application/json"])
-    fun addChapter(@RequestBody body: Chapter): ResponseEntity<Any> {
+    fun addChapter(@RequestParam("bookId") bookId: String, @RequestBody body: Chapter): ResponseEntity<Any> {
         return try {
+            body.book = bookService.findById(bookId)
             chapterService.save(body)
             ResponseEntity(HttpStatus.CREATED)
         } catch (e: EntityException) {

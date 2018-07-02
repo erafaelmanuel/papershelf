@@ -40,6 +40,7 @@ class BookController(@Autowired val bookService: BookService,
                 dto.add(linkTo(methodOn(this::class.java).getBookById(book.id)).withSelfRel())
                 dto.add(linkTo(methodOn(this::class.java).getAuthors(book.id)).withRel("authors"))
                 dto.add(linkTo(methodOn(this::class.java).getGenres(book.id)).withRel("genres"))
+                dto.add(linkTo(methodOn(this::class.java).getChapters(book.id)).withRel("chapters"))
                 resources.add(dto)
             })
         } else if (!StringUtils.isEmpty(authorId)) {
@@ -50,6 +51,7 @@ class BookController(@Autowired val bookService: BookService,
                 dto.add(linkTo(methodOn(this::class.java).getBookById(book.id)).withSelfRel())
                 dto.add(linkTo(methodOn(this::class.java).getAuthors(book.id)).withRel("authors"))
                 dto.add(linkTo(methodOn(this::class.java).getGenres(book.id)).withRel("genres"))
+                dto.add(linkTo(methodOn(this::class.java).getChapters(book.id)).withRel("chapters"))
                 resources.add(dto)
             })
         } else if (!StringUtils.isEmpty(genreId)) {
@@ -60,6 +62,7 @@ class BookController(@Autowired val bookService: BookService,
                 dto.add(linkTo(methodOn(this::class.java).getBookById(book.id)).withSelfRel())
                 dto.add(linkTo(methodOn(this::class.java).getAuthors(book.id)).withRel("authors"))
                 dto.add(linkTo(methodOn(this::class.java).getGenres(book.id)).withRel("genres"))
+                dto.add(linkTo(methodOn(this::class.java).getChapters(book.id)).withRel("chapters"))
                 resources.add(dto)
             })
         } else {
@@ -70,6 +73,7 @@ class BookController(@Autowired val bookService: BookService,
                 dto.add(linkTo(methodOn(this::class.java).getBookById(book.id)).withSelfRel())
                 dto.add(linkTo(methodOn(this::class.java).getAuthors(book.id)).withRel("authors"))
                 dto.add(linkTo(methodOn(this::class.java).getGenres(book.id)).withRel("genres"))
+                dto.add(linkTo(methodOn(this::class.java).getChapters(book.id)).withRel("chapters"))
                 resources.add(dto)
             })
         }
@@ -86,6 +90,7 @@ class BookController(@Autowired val bookService: BookService,
             dto.add(linkTo(methodOn(this::class.java).getBookById(book.id)).withSelfRel())
             dto.add(linkTo(methodOn(this::class.java).getAuthors(book.id)).withRel("authors"))
             dto.add(linkTo(methodOn(this::class.java).getGenres(book.id)).withRel("genres"))
+            dto.add(linkTo(methodOn(this::class.java).getChapters(book.id)).withRel("chapters"))
             ResponseEntity(Resource(dto), HttpStatus.OK)
         } catch (e: EntityException) {
             val message = Message(status = 404, error = "Not Found", message = e.message)
