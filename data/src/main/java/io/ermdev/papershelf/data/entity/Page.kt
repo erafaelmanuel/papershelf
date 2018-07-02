@@ -8,7 +8,7 @@ class Page(@Id
            @Column(name = "_id")
            var id: String = "",
 
-           @Column(name = "_number")
+           @Column(name = "_order")
            var order: Short = 0,
 
            @Column(name = "_image")

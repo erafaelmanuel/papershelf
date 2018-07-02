@@ -3,18 +3,31 @@ package io.ermdev.papershelf.rest.page
 import io.ermdev.papershelf.data.entity.Page
 import io.ermdev.papershelf.data.service.PageService
 import io.ermdev.papershelf.exception.PaperShelfException
+import io.ermdev.papershelf.exception.ResourceException
 import io.ermdev.papershelf.rest.Message
+import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.beans.factory.annotation.Value
 import org.springframework.hateoas.Resource
 import org.springframework.hateoas.Resources
 import org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo
 import org.springframework.hateoas.mvc.ControllerLinkBuilder.methodOn
+import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpStatus
+import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
+import java.io.ByteArrayOutputStream
+import java.io.FileInputStream
+import java.io.InputStream
+import javax.servlet.http.HttpServletRequest
 
 @RestController
 @RequestMapping("/pages")
-class PageController(val pageService: PageService) {
+class PageController(@Autowired val pageService: PageService,
+                     @Autowired val request: HttpServletRequest) {
+
+    @Value("\${papershelf.path}")
+    lateinit var path: String
 
     @GetMapping(produces = ["application/json"])
     fun getPages(): ResponseEntity<Any> {
@@ -28,17 +41,45 @@ class PageController(val pageService: PageService) {
         return ResponseEntity(Resources(resources, linkTo(this::class.java).withSelfRel()), HttpStatus.OK)
     }
 
-    @GetMapping(value = ["/{pageId}"], produces = ["application/json"])
+    @GetMapping(value = ["/{pageId}"], produces = ["image/jpeg", "application/json"])
     fun getPageById(@PathVariable("pageId") pageId: String): ResponseEntity<Any> {
-        return try {
-            val page = pageService.findById(pageId)
-            val dto = PageDto(id = page.id, order = page.order, image = page.image)
+        if (request.getHeader("Accept") == "application/json") {
+            return try {
+                val page = pageService.findById(pageId)
+                val dto = PageDto(id = page.id, order = page.order, image = page.image)
 
-            dto.add(linkTo(methodOn(this::class.java).getPageById(page.id)).withSelfRel())
-            ResponseEntity(Resource(dto), HttpStatus.OK)
-        } catch (e: PaperShelfException) {
-            val message = Message(status = 404, error = "Not Found", message = e.message)
-            ResponseEntity(message, HttpStatus.NOT_FOUND)
+                dto.add(linkTo(methodOn(this::class.java).getPageById(page.id)).withSelfRel())
+                ResponseEntity(Resource(dto), HttpStatus.OK)
+            } catch (e: PaperShelfException) {
+                val message = Message(status = 404, error = "Not Found", message = e.message)
+                ResponseEntity(message, HttpStatus.NOT_FOUND)
+            }
+        } else {
+            return try {
+                val page = pageService.findById(pageId)
+                val input: InputStream? = this::class.java.classLoader.getResourceAsStream(page.image)
+                val output = ByteArrayOutputStream()
+
+                var read = 0
+                val data = ByteArray(size = 10240)
+
+                if (input == null) {
+                    throw ResourceException("Unable to find the image")
+                }
+                while (input.read(data, 0, data.size).let({ read = it; read != -1 })) {
+                    output.write(data, 0, read)
+                }
+                output.flush()
+                output.close()
+
+                ResponseEntity(output.toByteArray(), HttpStatus.OK)
+            } catch (e: PaperShelfException) {
+                val headers = HttpHeaders()
+                val message = Message(status = 400, error = "Bad Request", message = e.message)
+
+                headers.contentType = MediaType.APPLICATION_JSON
+                ResponseEntity(message, headers, HttpStatus.INTERNAL_SERVER_ERROR)
+            }
         }
     }
 
