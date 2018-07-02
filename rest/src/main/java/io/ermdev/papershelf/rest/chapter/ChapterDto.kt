@@ -7,4 +7,5 @@ import java.sql.Timestamp
 @Relation(value = "chapter", collectionRelation = "chapters")
 class ChapterDto(var id: String = "",
                  var name: String = "",
+                 var number: Int = 0,
                  var uploadDate: Timestamp = Timestamp(System.currentTimeMillis())): ResourceSupport()

@@ -22,7 +22,8 @@ class ChapterController(val chapterService: ChapterService) {
     fun getChapters(): ResponseEntity<Any> {
         val resources = ArrayList<ChapterDto>()
         chapterService.findAll().forEach({ chapter ->
-            val dto = ChapterDto(id = chapter.id, name = chapter.name, uploadDate = chapter.uploadDate)
+            val dto = ChapterDto(id = chapter.id, name = chapter.name, number = chapter.number,
+                    uploadDate = chapter.uploadDate)
 
             dto.add(linkTo(methodOn(this::class.java).getChapterById(chapter.id)).withSelfRel())
             dto.add(linkTo(methodOn(this::class.java).getPages(chapter.id)).withRel("pages"))
@@ -35,7 +36,8 @@ class ChapterController(val chapterService: ChapterService) {
     fun getChapterById(@PathVariable("chapterId") chapterId: String): ResponseEntity<Any> {
         return try {
             val chapter = chapterService.findById(chapterId)
-            val dto = ChapterDto(id = chapter.id, name = chapter.name, uploadDate = chapter.uploadDate)
+            val dto = ChapterDto(id = chapter.id, name = chapter.name, number = chapter.number,
+                    uploadDate = chapter.uploadDate)
 
             dto.add(linkTo(methodOn(this::class.java).getChapterById(chapter.id)).withSelfRel())
             dto.add(linkTo(methodOn(this::class.java).getPages(chapter.id)).withRel("pages"))
@@ -83,7 +85,7 @@ class ChapterController(val chapterService: ChapterService) {
             val chapter = chapterService.findById(chapterId)
 
             chapter.name = body.name
-            chapter.uploadDate = body.uploadDate
+            chapter.number = body.number
             chapterService.save(chapter)
             ResponseEntity(HttpStatus.OK)
         } catch (e: EntityException) {
