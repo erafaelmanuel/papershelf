@@ -3,12 +3,13 @@ package io.ermdev.papershelf.data.service
 import io.ermdev.papershelf.data.entity.Chapter
 import io.ermdev.papershelf.data.repository.ChapterRepository
 import io.ermdev.papershelf.exception.EntityException
+import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 import org.springframework.util.StringUtils
 import java.util.*
 
 @Service
-class ChapterService(val chapterRepository: ChapterRepository) {
+class ChapterService(@Autowired val chapterRepository: ChapterRepository) {
 
     fun findAll(): List<Chapter> = chapterRepository.findAll()
 

@@ -8,4 +8,5 @@ import java.sql.Timestamp
 class ChapterDto(var id: String = "",
                  var name: String = "",
                  var order: Short = 0,
-                 var uploadDate: Timestamp = Timestamp(System.currentTimeMillis())): ResourceSupport()
+                 var uploadDate: Timestamp = Timestamp(System.currentTimeMillis()),
+                 var bookId: String = ""): ResourceSupport()

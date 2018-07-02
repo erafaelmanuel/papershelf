@@ -4,6 +4,8 @@ import io.ermdev.papershelf.data.entity.Chapter
 import io.ermdev.papershelf.data.service.BookService
 import io.ermdev.papershelf.data.service.ChapterService
 import io.ermdev.papershelf.exception.EntityException
+import io.ermdev.papershelf.exception.PaperShelfException
+import io.ermdev.papershelf.exception.ResourceException
 import io.ermdev.papershelf.rest.Message
 import io.ermdev.papershelf.rest.page.PageController
 import io.ermdev.papershelf.rest.page.PageDto
@@ -14,6 +16,7 @@ import org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo
 import org.springframework.hateoas.mvc.ControllerLinkBuilder.methodOn
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
+import org.springframework.util.StringUtils
 import org.springframework.web.bind.annotation.*
 
 @RestController
@@ -71,12 +74,16 @@ class ChapterController(@Autowired val chapterService: ChapterService,
     }
 
     @PostMapping(consumes = ["application/json"])
-    fun addChapter(@RequestParam("bookId") bookId: String, @RequestBody body: Chapter): ResponseEntity<Any> {
+    fun addChapter(@RequestBody body: ChapterDto): ResponseEntity<Any> {
         return try {
-            body.book = bookService.findById(bookId)
-            chapterService.save(body)
+            if (StringUtils.isEmpty(body.bookId)) {
+                throw ResourceException("bookId cannot be empty")
+            }
+            val book = Chapter(name = body.name, order = body.order, book = bookService.findById(body.bookId))
+
+            chapterService.save(book)
             ResponseEntity(HttpStatus.CREATED)
-        } catch (e: EntityException) {
+        } catch (e: PaperShelfException) {
             val message = Message(status = 400, error = "Bad Request", message = e.message)
             ResponseEntity(message, HttpStatus.BAD_REQUEST)
         }
@@ -84,12 +91,14 @@ class ChapterController(@Autowired val chapterService: ChapterService,
 
     @PutMapping(value = ["/{chapterId}"], consumes = ["application/json"])
     fun updateChapterById(@PathVariable("chapterId") chapterId: String,
-                          @RequestBody body: Chapter): ResponseEntity<Any> {
+                          @RequestBody body: ChapterDto): ResponseEntity<Any> {
         return try {
             val chapter = chapterService.findById(chapterId)
 
             chapter.name = body.name
             chapter.order = body.order
+            chapter.book = bookService.findById(body.bookId)
+
             chapterService.save(chapter)
             ResponseEntity(HttpStatus.OK)
         } catch (e: EntityException) {
