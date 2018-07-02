@@ -28,7 +28,7 @@ class ChapterController(@Autowired val chapterService: ChapterService,
         val resources = ArrayList<ChapterDto>()
         chapterService.findAll().forEach({ chapter ->
             val dto = ChapterDto(id = chapter.id, name = chapter.name, order = chapter.order,
-                    uploadDate = chapter.uploadDate)
+                    uploadDate = chapter.uploadDate, bookId = chapter.book.id)
 
             dto.add(linkTo(methodOn(this::class.java).getChapterById(chapter.id)).withSelfRel())
             dto.add(linkTo(methodOn(this::class.java).getPages(chapter.id)).withRel("pages"))
@@ -42,7 +42,7 @@ class ChapterController(@Autowired val chapterService: ChapterService,
         return try {
             val chapter = chapterService.findById(chapterId)
             val dto = ChapterDto(id = chapter.id, name = chapter.name, order = chapter.order,
-                    uploadDate = chapter.uploadDate)
+                    uploadDate = chapter.uploadDate, bookId = chapter.book.id)
 
             dto.add(linkTo(methodOn(this::class.java).getChapterById(chapter.id)).withSelfRel())
             dto.add(linkTo(methodOn(this::class.java).getPages(chapter.id)).withRel("pages"))
@@ -59,7 +59,7 @@ class ChapterController(@Autowired val chapterService: ChapterService,
             val resources = ArrayList<PageDto>()
 
             chapterService.findById(chapterId).pages.forEach({ page ->
-                val dto = PageDto(id = page.id, order = page.order, image = page.image)
+                val dto = PageDto(id = page.id, order = page.order, image = page.image, chapterId = page.chapter.id)
 
                 dto.add(linkTo(methodOn(PageController::class.java).getPageById(page.id)).withSelfRel())
                 resources.add(dto)

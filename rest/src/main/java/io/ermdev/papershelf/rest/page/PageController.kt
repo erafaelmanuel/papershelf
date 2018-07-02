@@ -1,8 +1,10 @@
 package io.ermdev.papershelf.rest.page
 
 import io.ermdev.papershelf.data.entity.Page
+import io.ermdev.papershelf.data.service.ChapterService
 import io.ermdev.papershelf.data.service.PageService
 import io.ermdev.papershelf.exception.PaperShelfException
+import io.ermdev.papershelf.exception.ResourceException
 import io.ermdev.papershelf.rest.Message
 import io.ermdev.papershelf.rest.ResourceFinder.Companion.getLocalFile
 import org.springframework.beans.factory.annotation.Autowired
@@ -14,6 +16,7 @@ import org.springframework.hateoas.mvc.ControllerLinkBuilder.methodOn
 import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
+import org.springframework.util.StringUtils
 import org.springframework.web.bind.annotation.*
 import java.io.ByteArrayOutputStream
 import javax.servlet.http.HttpServletRequest
@@ -21,6 +24,7 @@ import javax.servlet.http.HttpServletRequest
 @RestController
 @RequestMapping("/pages")
 class PageController(@Autowired val pageService: PageService,
+                     @Autowired val chapterService: ChapterService,
                      @Autowired val request: HttpServletRequest) {
 
     @Value("\${papershelf.path}")
@@ -30,7 +34,7 @@ class PageController(@Autowired val pageService: PageService,
     fun getPages(): ResponseEntity<Any> {
         val resources = ArrayList<PageDto>()
         pageService.findAll().forEach({ page ->
-            val dto = PageDto(id = page.id, order = page.order, image = page.image)
+            val dto = PageDto(id = page.id, order = page.order, image = page.image, chapterId = page.chapter.id)
 
             dto.add(linkTo(methodOn(this::class.java).getPageById(page.id)).withSelfRel())
             resources.add(dto)
@@ -43,7 +47,7 @@ class PageController(@Autowired val pageService: PageService,
         if (request.getHeader("Accept") == "application/json") {
             return try {
                 val page = pageService.findById(pageId)
-                val dto = PageDto(id = page.id, order = page.order, image = page.image)
+                val dto = PageDto(id = page.id, order = page.order, image = page.image, chapterId = page.chapter.id)
 
                 dto.add(linkTo(methodOn(this::class.java).getPageById(page.id)).withSelfRel())
                 ResponseEntity(Resource(dto), HttpStatus.OK)
@@ -80,7 +84,10 @@ class PageController(@Autowired val pageService: PageService,
     @PostMapping(consumes = ["application/json"])
     fun addPage(@RequestBody body: PageDto): ResponseEntity<Any> {
         return try {
-            val page = Page(order = body.order, image = body.image)
+            if (StringUtils.isEmpty(body.chapterId)) {
+                throw ResourceException("chapterId cannot be empty")
+            }
+            val page = Page(order = body.order, image = body.image, chapter = chapterService.findById(body.chapterId))
 
             pageService.save(page)
             ResponseEntity(HttpStatus.CREATED)
@@ -98,6 +105,7 @@ class PageController(@Autowired val pageService: PageService,
 
             page.order = body.order
             page.image = body.image
+            page.chapter = chapterService.findById(body.chapterId)
 
             pageService.save(page)
             ResponseEntity(HttpStatus.OK)
