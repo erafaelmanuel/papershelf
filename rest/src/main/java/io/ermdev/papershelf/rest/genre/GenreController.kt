@@ -3,6 +3,7 @@ package io.ermdev.papershelf.rest.genre
 import io.ermdev.papershelf.data.entity.Genre
 import io.ermdev.papershelf.data.service.GenreService
 import io.ermdev.papershelf.exception.EntityException
+import io.ermdev.papershelf.exception.PaperShelfException
 import io.ermdev.papershelf.rest.Message
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.hateoas.Resource
@@ -37,18 +38,20 @@ class GenreController(@Autowired val genreService: GenreService) {
 
             dto.add(linkTo(methodOn(this::class.java).getGenreById(genre.id)).withSelfRel())
             ResponseEntity(Resource(dto), HttpStatus.OK)
-        } catch (e: EntityException) {
+        } catch (e: PaperShelfException) {
             val message = Message(status = 404, error = "Not Found", message = e.message)
             ResponseEntity(message, HttpStatus.NOT_FOUND)
         }
     }
 
     @PostMapping(consumes = ["application/json"])
-    fun addGenre(@RequestBody body: Genre): ResponseEntity<Any> {
+    fun addGenre(@RequestBody body: GenreDto): ResponseEntity<Any> {
         return try {
-            genreService.save(body)
+            val genre = Genre(name = body.name, description = body.description)
+
+            genreService.save(genre)
             ResponseEntity(HttpStatus.CREATED)
-        } catch (e: EntityException) {
+        } catch (e: PaperShelfException) {
             val message = Message(status = 400, error = "Bad Request", message = e.message)
             ResponseEntity(message, HttpStatus.BAD_REQUEST)
         }
@@ -56,15 +59,16 @@ class GenreController(@Autowired val genreService: GenreService) {
 
     @PutMapping(value = ["/{genreId}"], consumes = ["application/json"])
     fun updateGenreById(@PathVariable("genreId") genreId: String,
-                        @RequestBody body: Genre): ResponseEntity<Any> {
+                        @RequestBody body: GenreDto): ResponseEntity<Any> {
         return try {
             val genre = genreService.findById(genreId)
 
             genre.name = body.name
             genre.description = body.description
+
             genreService.save(genre)
             ResponseEntity(HttpStatus.OK)
-        } catch (e: EntityException) {
+        } catch (e: PaperShelfException) {
             val message = Message(status = 400, error = "Bad Request", message = e.message)
             ResponseEntity(message, HttpStatus.BAD_REQUEST)
         }

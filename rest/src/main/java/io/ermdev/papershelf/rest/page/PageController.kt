@@ -2,7 +2,7 @@ package io.ermdev.papershelf.rest.page
 
 import io.ermdev.papershelf.data.entity.Page
 import io.ermdev.papershelf.data.service.PageService
-import io.ermdev.papershelf.exception.EntityException
+import io.ermdev.papershelf.exception.PaperShelfException
 import io.ermdev.papershelf.rest.Message
 import org.springframework.hateoas.Resource
 import org.springframework.hateoas.Resources
@@ -36,18 +36,20 @@ class PageController(val pageService: PageService) {
 
             dto.add(linkTo(methodOn(this::class.java).getPageById(page.id)).withSelfRel())
             ResponseEntity(Resource(dto), HttpStatus.OK)
-        } catch (e: EntityException) {
+        } catch (e: PaperShelfException) {
             val message = Message(status = 404, error = "Not Found", message = e.message)
             ResponseEntity(message, HttpStatus.NOT_FOUND)
         }
     }
 
     @PostMapping(consumes = ["application/json"])
-    fun addPage(@RequestBody body: Page): ResponseEntity<Any> {
+    fun addPage(@RequestBody body: PageDto): ResponseEntity<Any> {
         return try {
-            pageService.save(body)
+            val page = Page(order = body.order, image = body.image)
+
+            pageService.save(page)
             ResponseEntity(HttpStatus.CREATED)
-        } catch (e: EntityException) {
+        } catch (e: PaperShelfException) {
             val message = Message(status = 400, error = "Bad Request", message = e.message)
             ResponseEntity(message, HttpStatus.BAD_REQUEST)
         }
@@ -55,15 +57,16 @@ class PageController(val pageService: PageService) {
 
     @PutMapping(value = ["/{pageId}"], consumes = ["application/json"])
     fun updatePageById(@PathVariable("pageId") pageId: String,
-                       @RequestBody body: Page): ResponseEntity<Any> {
+                       @RequestBody body: PageDto): ResponseEntity<Any> {
         return try {
             val page = pageService.findById(pageId)
 
             page.order = body.order
             page.image = body.image
+
             pageService.save(page)
             ResponseEntity(HttpStatus.OK)
-        } catch (e: EntityException) {
+        } catch (e: PaperShelfException) {
             val message = Message(status = 400, error = "Bad Request", message = e.message)
             ResponseEntity(message, HttpStatus.BAD_REQUEST)
         }

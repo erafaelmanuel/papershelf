@@ -3,7 +3,6 @@ package io.ermdev.papershelf.rest.chapter
 import io.ermdev.papershelf.data.entity.Chapter
 import io.ermdev.papershelf.data.service.BookService
 import io.ermdev.papershelf.data.service.ChapterService
-import io.ermdev.papershelf.exception.EntityException
 import io.ermdev.papershelf.exception.PaperShelfException
 import io.ermdev.papershelf.exception.ResourceException
 import io.ermdev.papershelf.rest.Message
@@ -48,7 +47,7 @@ class ChapterController(@Autowired val chapterService: ChapterService,
             dto.add(linkTo(methodOn(this::class.java).getChapterById(chapter.id)).withSelfRel())
             dto.add(linkTo(methodOn(this::class.java).getPages(chapter.id)).withRel("pages"))
             ResponseEntity(Resource(dto), HttpStatus.OK)
-        } catch (e: EntityException) {
+        } catch (e: PaperShelfException) {
             val message = Message(status = 404, error = "Not Found", message = e.message)
             ResponseEntity(message, HttpStatus.NOT_FOUND)
         }
@@ -67,7 +66,7 @@ class ChapterController(@Autowired val chapterService: ChapterService,
             })
             ResponseEntity(Resources(resources, linkTo(methodOn(this::class.java).getPages(chapterId))
                     .withRel("pages")), HttpStatus.OK)
-        } catch (e: EntityException) {
+        } catch (e: PaperShelfException) {
             val message = Message(status = 404, error = "Not Found", message = e.message)
             ResponseEntity(message, HttpStatus.NOT_FOUND)
         }
@@ -101,7 +100,7 @@ class ChapterController(@Autowired val chapterService: ChapterService,
 
             chapterService.save(chapter)
             ResponseEntity(HttpStatus.OK)
-        } catch (e: EntityException) {
+        } catch (e: PaperShelfException) {
             val message = Message(status = 400, error = "Bad Request", message = e.message)
             ResponseEntity(message, HttpStatus.BAD_REQUEST)
         }

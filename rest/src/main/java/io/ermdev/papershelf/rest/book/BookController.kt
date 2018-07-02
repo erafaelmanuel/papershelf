@@ -4,7 +4,7 @@ import io.ermdev.papershelf.data.entity.Book
 import io.ermdev.papershelf.data.service.AuthorService
 import io.ermdev.papershelf.data.service.BookService
 import io.ermdev.papershelf.data.service.GenreService
-import io.ermdev.papershelf.exception.EntityException
+import io.ermdev.papershelf.exception.PaperShelfException
 import io.ermdev.papershelf.rest.Message
 import io.ermdev.papershelf.rest.author.AuthorController
 import io.ermdev.papershelf.rest.author.AuthorDto
@@ -92,7 +92,7 @@ class BookController(@Autowired val bookService: BookService,
             dto.add(linkTo(methodOn(this::class.java).getGenres(book.id)).withRel("genres"))
             dto.add(linkTo(methodOn(this::class.java).getChapters(book.id)).withRel("chapters"))
             ResponseEntity(Resource(dto), HttpStatus.OK)
-        } catch (e: EntityException) {
+        } catch (e: PaperShelfException) {
             val message = Message(status = 404, error = "Not Found", message = e.message)
             ResponseEntity(message, HttpStatus.NOT_FOUND)
         }
@@ -110,7 +110,7 @@ class BookController(@Autowired val bookService: BookService,
             })
             ResponseEntity(Resources(resources, linkTo(methodOn(this::class.java).getAuthors(bookId))
                     .withRel("authors")), HttpStatus.OK)
-        } catch (e: EntityException) {
+        } catch (e: PaperShelfException) {
             val message = Message(status = 404, error = "Not Found", message = e.message)
             ResponseEntity(message, HttpStatus.NOT_FOUND)
         }
@@ -128,7 +128,7 @@ class BookController(@Autowired val bookService: BookService,
             })
             return ResponseEntity(Resources(resources, linkTo(methodOn(this::class.java).getGenres(bookId))
                     .withRel("genres")), HttpStatus.OK)
-        } catch (e: EntityException) {
+        } catch (e: PaperShelfException) {
             val message = Message(status = 404, error = "Not Found", message = e.message)
             ResponseEntity(message, HttpStatus.NOT_FOUND)
         }
@@ -147,18 +147,21 @@ class BookController(@Autowired val bookService: BookService,
             })
             return ResponseEntity(Resources(resources, linkTo(methodOn(this::class.java).getChapters(bookId))
                     .withRel("chapters")), HttpStatus.OK)
-        } catch (e: EntityException) {
+        } catch (e: PaperShelfException) {
             val message = Message(status = 404, error = "Not Found", message = e.message)
             ResponseEntity(message, HttpStatus.NOT_FOUND)
         }
     }
 
     @PostMapping(consumes = ["application/json"])
-    fun addBook(@RequestBody body: Book): ResponseEntity<Any> {
+    fun addBook(@RequestBody body: BookDto): ResponseEntity<Any> {
         return try {
-            bookService.save(body)
+            val book = Book(title = body.title, status = body.status, summary = body.summary,
+                    thumbnail = body.thumbnail)
+
+            bookService.save(book)
             ResponseEntity(HttpStatus.CREATED)
-        } catch (e: EntityException) {
+        } catch (e: PaperShelfException) {
             val message = Message(status = 400, error = "Bad Request", message = e.message)
             ResponseEntity(message, HttpStatus.BAD_REQUEST)
         }
@@ -174,7 +177,7 @@ class BookController(@Autowired val bookService: BookService,
             book.authors.add(author)
             bookService.save(book)
             ResponseEntity(HttpStatus.CREATED)
-        } catch (e: EntityException) {
+        } catch (e: PaperShelfException) {
             val message = Message(status = 400, error = "Bad Request", message = e.message)
             ResponseEntity(message, HttpStatus.BAD_REQUEST)
         }
@@ -190,14 +193,15 @@ class BookController(@Autowired val bookService: BookService,
             book.genres.add(genre)
             bookService.save(book)
             ResponseEntity(HttpStatus.CREATED)
-        } catch (e: EntityException) {
+        } catch (e: PaperShelfException) {
             val message = Message(status = 400, error = "Bad Request", message = e.message)
             ResponseEntity(message, HttpStatus.BAD_REQUEST)
         }
     }
 
     @PutMapping(value = ["/{bookId}"], consumes = ["application/json"])
-    fun updateBookById(@PathVariable("bookId") bookId: String, @RequestBody body: Book): ResponseEntity<Any> {
+    fun updateBookById(@PathVariable("bookId") bookId: String,
+                       @RequestBody body: BookDto): ResponseEntity<Any> {
         return try {
             val book = bookService.findById(bookId)
 
@@ -205,9 +209,10 @@ class BookController(@Autowired val bookService: BookService,
             book.status = body.status
             book.summary = body.summary
             book.thumbnail = body.thumbnail
+
             bookService.save(book)
             ResponseEntity(HttpStatus.OK)
-        } catch (e: EntityException) {
+        } catch (e: PaperShelfException) {
             val message = Message(status = 400, error = "Bad Request", message = e.message)
             ResponseEntity(message, HttpStatus.BAD_REQUEST)
         }
@@ -229,7 +234,7 @@ class BookController(@Autowired val bookService: BookService,
             book.authors.remove(author)
             bookService.save(book)
             ResponseEntity(HttpStatus.OK)
-        } catch (e: EntityException) {
+        } catch (e: PaperShelfException) {
             val message = Message(status = 400, error = "Bad Request", message = e.message)
             ResponseEntity(message, HttpStatus.BAD_REQUEST)
         }
@@ -245,7 +250,7 @@ class BookController(@Autowired val bookService: BookService,
             book.genres.remove(genre)
             bookService.save(book)
             ResponseEntity(HttpStatus.OK)
-        } catch (e: EntityException) {
+        } catch (e: PaperShelfException) {
             val message = Message(status = 400, error = "Bad Request", message = e.message)
             ResponseEntity(message, HttpStatus.BAD_REQUEST)
         }

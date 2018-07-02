@@ -2,7 +2,7 @@ package io.ermdev.papershelf.rest.author
 
 import io.ermdev.papershelf.data.entity.Author
 import io.ermdev.papershelf.data.service.AuthorService
-import io.ermdev.papershelf.exception.EntityException
+import io.ermdev.papershelf.exception.PaperShelfException
 import io.ermdev.papershelf.rest.Message
 import org.springframework.hateoas.Resource
 import org.springframework.hateoas.Resources
@@ -36,18 +36,20 @@ class AuthorController(val authorService: AuthorService) {
 
             dto.add(linkTo(methodOn(this::class.java).getAuthorById(author.id)).withSelfRel())
             ResponseEntity(Resource(dto), HttpStatus.OK)
-        } catch (e: EntityException) {
+        } catch (e: PaperShelfException) {
             val message = Message(status = 404, error = "Not Found", message = e.message)
             ResponseEntity(message, HttpStatus.NOT_FOUND)
         }
     }
 
     @PostMapping(consumes = ["application/json"])
-    fun addAuthor(@RequestBody body: Author): ResponseEntity<Any> {
+    fun addAuthor(@RequestBody body: AuthorDto): ResponseEntity<Any> {
         return try {
-            authorService.save(body)
+            val author = Author(name = body.id)
+
+            authorService.save(author)
             ResponseEntity(HttpStatus.CREATED)
-        } catch (e: EntityException) {
+        } catch (e: PaperShelfException) {
             val message = Message(status = 400, error = "Bad Request", message = e.message)
             ResponseEntity(message, HttpStatus.BAD_REQUEST)
         }
@@ -55,14 +57,14 @@ class AuthorController(val authorService: AuthorService) {
 
     @PutMapping(value = ["/{authorId}"], consumes = ["application/json"])
     fun updateAuthorById(@PathVariable("authorId") authorId: String,
-                         @RequestBody body: Author): ResponseEntity<Any> {
+                         @RequestBody body: AuthorDto): ResponseEntity<Any> {
         return try {
             val author = authorService.findById(authorId)
 
             author.name = body.name
             authorService.save(author)
             ResponseEntity(HttpStatus.OK)
-        } catch (e: EntityException) {
+        } catch (e: PaperShelfException) {
             val message = Message(status = 400, error = "Bad Request", message = e.message)
             ResponseEntity(message, HttpStatus.BAD_REQUEST)
         }
