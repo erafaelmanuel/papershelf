@@ -12,8 +12,8 @@ class Chapter(@Id
               @Column(name = "_name")
               var name: String = "",
 
-              @Column(name = "_number")
-              var number: Int = 0,
+              @Column(name = "_order")
+              var order: Short = 0,
 
               @Column(name = "upload_date")
               var uploadDate: Timestamp = Timestamp(System.currentTimeMillis()),

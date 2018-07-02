@@ -20,7 +20,7 @@ class PageController(val pageService: PageService) {
     fun getPages(): ResponseEntity<Any> {
         val resources = ArrayList<PageDto>()
         pageService.findAll().forEach({ page ->
-            val dto = PageDto(id = page.id, number = page.number, image = page.image)
+            val dto = PageDto(id = page.id, order = page.order, image = page.image)
 
             dto.add(linkTo(methodOn(this::class.java).getPageById(page.id)).withSelfRel())
             resources.add(dto)
@@ -32,7 +32,7 @@ class PageController(val pageService: PageService) {
     fun getPageById(@PathVariable("pageId") pageId: String): ResponseEntity<Any> {
         return try {
             val page = pageService.findById(pageId)
-            val dto = PageDto(id = page.id, number = page.number, image = page.image)
+            val dto = PageDto(id = page.id, order = page.order, image = page.image)
 
             dto.add(linkTo(methodOn(this::class.java).getPageById(page.id)).withSelfRel())
             ResponseEntity(Resource(dto), HttpStatus.OK)
@@ -59,7 +59,7 @@ class PageController(val pageService: PageService) {
         return try {
             val page = pageService.findById(pageId)
 
-            page.number = body.number
+            page.order = body.order
             page.image = body.image
             pageService.save(page)
             ResponseEntity(HttpStatus.OK)

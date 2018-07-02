@@ -9,7 +9,7 @@ class Page(@Id
            var id: String = "",
 
            @Column(name = "_number")
-           var number: Short = 0,
+           var order: Short = 0,
 
            @Column(name = "_image")
            var image: String = "",

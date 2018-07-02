@@ -22,7 +22,7 @@ class ChapterController(val chapterService: ChapterService) {
     fun getChapters(): ResponseEntity<Any> {
         val resources = ArrayList<ChapterDto>()
         chapterService.findAll().forEach({ chapter ->
-            val dto = ChapterDto(id = chapter.id, name = chapter.name, number = chapter.number,
+            val dto = ChapterDto(id = chapter.id, name = chapter.name, order = chapter.order,
                     uploadDate = chapter.uploadDate)
 
             dto.add(linkTo(methodOn(this::class.java).getChapterById(chapter.id)).withSelfRel())
@@ -36,7 +36,7 @@ class ChapterController(val chapterService: ChapterService) {
     fun getChapterById(@PathVariable("chapterId") chapterId: String): ResponseEntity<Any> {
         return try {
             val chapter = chapterService.findById(chapterId)
-            val dto = ChapterDto(id = chapter.id, name = chapter.name, number = chapter.number,
+            val dto = ChapterDto(id = chapter.id, name = chapter.name, order = chapter.order,
                     uploadDate = chapter.uploadDate)
 
             dto.add(linkTo(methodOn(this::class.java).getChapterById(chapter.id)).withSelfRel())
@@ -54,7 +54,7 @@ class ChapterController(val chapterService: ChapterService) {
             val resources = ArrayList<PageDto>()
 
             chapterService.findById(chapterId).pages.forEach({ page ->
-                val dto = PageDto(id = page.id, number = page.number, image = page.image)
+                val dto = PageDto(id = page.id, order = page.order, image = page.image)
 
                 dto.add(linkTo(methodOn(PageController::class.java).getPageById(page.id)).withSelfRel())
                 resources.add(dto)
@@ -85,7 +85,7 @@ class ChapterController(val chapterService: ChapterService) {
             val chapter = chapterService.findById(chapterId)
 
             chapter.name = body.name
-            chapter.number = body.number
+            chapter.order = body.order
             chapterService.save(chapter)
             ResponseEntity(HttpStatus.OK)
         } catch (e: EntityException) {

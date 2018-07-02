@@ -134,7 +134,7 @@ class BookController(@Autowired val bookService: BookService,
         return try {
             val resources = ArrayList<ChapterDto>()
             bookService.findById(bookId).chapters.forEach({ chapter ->
-                val dto = ChapterDto(id = chapter.id, name = chapter.name, number = chapter.number,
+                val dto = ChapterDto(id = chapter.id, name = chapter.name, order = chapter.order,
                         uploadDate = chapter.uploadDate)
 
                 dto.add(linkTo(methodOn(ChapterController::class.java).getChapterById(chapter.id)).withSelfRel())

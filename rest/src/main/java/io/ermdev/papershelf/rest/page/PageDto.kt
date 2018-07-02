@@ -5,5 +5,5 @@ import org.springframework.hateoas.core.Relation
 
 @Relation(value = "page", collectionRelation = "pages")
 class PageDto(var id: String = "",
-              var number: Short = 0,
+              var order: Short = 0,
               var image: String = ""): ResourceSupport()
