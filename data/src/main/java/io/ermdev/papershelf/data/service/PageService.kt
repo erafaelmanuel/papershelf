@@ -11,7 +11,9 @@ class PageService(val pageRepository: PageRepository) {
 
     fun findAll(): List<Page> = pageRepository.findAll()
 
-    fun findAll(pageable: Pageable): List<Page> = pageRepository.findAll(pageable).content
+    fun findAll(pageable: Pageable): org.springframework.data.domain.Page<Page> {
+        return pageRepository.findAll(pageable)
+    }
 
     fun findById(id: String): Page {
         return pageRepository.findById(id).orElseThrow({

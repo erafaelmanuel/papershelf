@@ -11,7 +11,6 @@ import org.apache.commons.io.IOUtils
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.data.domain.Pageable
-import org.springframework.data.web.PageableDefault
 import org.springframework.hateoas.Resource
 import org.springframework.hateoas.Resources
 import org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo
@@ -33,7 +32,7 @@ class PageController(@Autowired val pageService: PageService,
     lateinit var path: String
 
     @GetMapping(produces = ["application/json"])
-    fun getPages(@PageableDefault(size = 20) pageable: Pageable): ResponseEntity<Any> {
+    fun getPages(pageable: Pageable): ResponseEntity<Any> {
         val resources = ArrayList<PageDto>()
         pageService.findAll(pageable).forEach({ page ->
             val dto = PageDto(id = page.id, order = page.order, image = page.image, chapterId = page.chapter.id)

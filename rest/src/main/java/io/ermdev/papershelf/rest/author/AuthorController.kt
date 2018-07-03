@@ -4,6 +4,8 @@ import io.ermdev.papershelf.data.entity.Author
 import io.ermdev.papershelf.data.service.AuthorService
 import io.ermdev.papershelf.exception.PaperShelfException
 import io.ermdev.papershelf.rest.Message
+import org.springframework.data.domain.Pageable
+import org.springframework.data.web.PageableDefault
 import org.springframework.hateoas.Resource
 import org.springframework.hateoas.Resources
 import org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo
@@ -17,9 +19,9 @@ import org.springframework.web.bind.annotation.*
 class AuthorController(val authorService: AuthorService) {
 
     @GetMapping(produces = ["application/json"])
-    fun getAuthors(): ResponseEntity<Any> {
+    fun getAuthors(@PageableDefault(sort = ["name"]) pageable: Pageable): ResponseEntity<Any> {
         val resources = ArrayList<AuthorDto>()
-        authorService.findAll().forEach({ author ->
+        authorService.findAll(pageable).forEach({ author ->
             val dto = AuthorDto(id = author.id, name = author.name)
 
             dto.add(linkTo(methodOn(this::class.java).getAuthorById(author.id)).withSelfRel())

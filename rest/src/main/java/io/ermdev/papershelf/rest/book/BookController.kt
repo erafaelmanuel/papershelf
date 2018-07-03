@@ -13,6 +13,8 @@ import io.ermdev.papershelf.rest.chapter.ChapterDto
 import io.ermdev.papershelf.rest.genre.GenreController
 import io.ermdev.papershelf.rest.genre.GenreDto
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.data.domain.Pageable
+import org.springframework.data.web.PageableDefault
 import org.springframework.hateoas.Resource
 import org.springframework.hateoas.Resources
 import org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo
@@ -30,10 +32,11 @@ class BookController(@Autowired val bookService: BookService,
 
     @GetMapping(produces = ["application/json"])
     fun getBooks(@RequestParam(value = "authorId", required = false) authorId: String?,
-                 @RequestParam(value = "genreId", required = false) genreId: String?): ResponseEntity<Any> {
+                 @RequestParam(value = "genreId", required = false) genreId: String?,
+                 @PageableDefault(sort = ["title"]) pageable: Pageable): ResponseEntity<Any> {
         val resources = ArrayList<BookDto>()
         if (!StringUtils.isEmpty(authorId) && !StringUtils.isEmpty(genreId)) {
-            bookService.findByAuthorIdAndGenreId(authorId!!, genreId!!).forEach({ book ->
+            bookService.findByAuthorIdAndGenreId(authorId!!, genreId!!, pageable).forEach({ book ->
                 val dto = BookDto(id = book.id, title = book.title, status = book.status,
                         summary = book.summary, thumbnail = book.thumbnail)
 
@@ -44,7 +47,7 @@ class BookController(@Autowired val bookService: BookService,
                 resources.add(dto)
             })
         } else if (!StringUtils.isEmpty(authorId)) {
-            bookService.findByAuthorId(authorId!!).forEach({ book ->
+            bookService.findByAuthorId(authorId!!, pageable).forEach({ book ->
                 val dto = BookDto(id = book.id, title = book.title, status = book.status,
                         summary = book.summary, thumbnail = book.thumbnail)
 
@@ -55,7 +58,7 @@ class BookController(@Autowired val bookService: BookService,
                 resources.add(dto)
             })
         } else if (!StringUtils.isEmpty(genreId)) {
-            bookService.findByGenreId(genreId!!).forEach({ book ->
+            bookService.findByGenreId(genreId!!, pageable).forEach({ book ->
                 val dto = BookDto(id = book.id, title = book.title, status = book.status,
                         summary = book.summary, thumbnail = book.thumbnail)
 
@@ -66,7 +69,7 @@ class BookController(@Autowired val bookService: BookService,
                 resources.add(dto)
             })
         } else {
-            bookService.findAll().forEach({ book ->
+            bookService.findAll(pageable).forEach({ book ->
                 val dto = BookDto(id = book.id, title = book.title, status = book.status,
                         summary = book.summary, thumbnail = book.thumbnail)
 
