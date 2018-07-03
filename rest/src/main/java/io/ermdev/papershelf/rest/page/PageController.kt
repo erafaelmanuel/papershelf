@@ -7,6 +7,7 @@ import io.ermdev.papershelf.exception.PaperShelfException
 import io.ermdev.papershelf.exception.ResourceException
 import io.ermdev.papershelf.rest.Message
 import io.ermdev.papershelf.rest.ResourceFinder.Companion.getLocalFile
+import org.apache.commons.io.IOUtils
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.hateoas.Resource
@@ -44,40 +45,31 @@ class PageController(@Autowired val pageService: PageService,
 
     @GetMapping(value = ["/{pageId}"], produces = ["image/jpeg", "application/json"])
     fun getPageById(@PathVariable("pageId") pageId: String): ResponseEntity<Any> {
-        if (request.getHeader("Accept") == "application/json") {
-            return try {
-                val page = pageService.findById(pageId)
+        val headers = HttpHeaders()
+        return try {
+            val page = pageService.findById(pageId)
+            if (request.getHeader("Accept") == "application/json") {
                 val dto = PageDto(id = page.id, order = page.order, image = page.image, chapterId = page.chapter.id)
 
                 dto.add(linkTo(methodOn(this::class.java).getPageById(page.id)).withSelfRel())
                 ResponseEntity(Resource(dto), HttpStatus.OK)
-            } catch (e: PaperShelfException) {
-                val message = Message(status = 404, error = "Not Found", message = e.message)
-                ResponseEntity(message, HttpStatus.NOT_FOUND)
-            }
-        } else {
-            return try {
-                val page = pageService.findById(pageId)
-                val input = getLocalFile(path + page.image)
-                val output = ByteArrayOutputStream()
+            } else {
+                return try {
+                    val input = getLocalFile(path + page.image)
 
-                var read = 0
-                val bytes = ByteArray(size = 10240)
+                    ResponseEntity(IOUtils.toByteArray(input), HttpStatus.OK)
+                } catch (e: PaperShelfException) {
+                    val message = Message(status = 500, error = "Internal Server Error", message = e.message)
 
-                while (input.read(bytes, 0, bytes.size).let({ read = it; read != -1 })) {
-                    output.write(bytes, 0, read)
+                    headers.add("Content-Type", "application/json")
+                    ResponseEntity(message, headers, HttpStatus.INTERNAL_SERVER_ERROR)
                 }
-                output.flush()
-                output.close()
-
-                ResponseEntity(output.toByteArray(), HttpStatus.OK)
-            } catch (e: PaperShelfException) {
-                val headers = HttpHeaders()
-                val message = Message(status = 400, error = "Bad Request", message = e.message)
-
-                headers.add("Content-Type", "application/json")
-                ResponseEntity(message, headers, HttpStatus.INTERNAL_SERVER_ERROR)
             }
+        } catch(e: PaperShelfException) {
+            val message = Message(status = 404, error = "Not Found", message = e.message)
+
+            headers.add("Content-Type", "application/json")
+            ResponseEntity(message, headers, HttpStatus.NOT_FOUND)
         }
     }
 
