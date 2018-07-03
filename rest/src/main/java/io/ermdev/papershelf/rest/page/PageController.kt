@@ -10,6 +10,8 @@ import io.ermdev.papershelf.rest.ResourceFinder.Companion.getLocalFile
 import org.apache.commons.io.IOUtils
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
+import org.springframework.data.domain.Pageable
+import org.springframework.data.web.PageableDefault
 import org.springframework.hateoas.Resource
 import org.springframework.hateoas.Resources
 import org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo
@@ -19,7 +21,6 @@ import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.util.StringUtils
 import org.springframework.web.bind.annotation.*
-import java.io.ByteArrayOutputStream
 import javax.servlet.http.HttpServletRequest
 
 @RestController
@@ -32,9 +33,9 @@ class PageController(@Autowired val pageService: PageService,
     lateinit var path: String
 
     @GetMapping(produces = ["application/json"])
-    fun getPages(): ResponseEntity<Any> {
+    fun getPages(@PageableDefault(size = 20) pageable: Pageable): ResponseEntity<Any> {
         val resources = ArrayList<PageDto>()
-        pageService.findAll().forEach({ page ->
+        pageService.findAll(pageable).forEach({ page ->
             val dto = PageDto(id = page.id, order = page.order, image = page.image, chapterId = page.chapter.id)
 
             dto.add(linkTo(methodOn(this::class.java).getPageById(page.id)).withSelfRel())
@@ -65,7 +66,7 @@ class PageController(@Autowired val pageService: PageService,
                     ResponseEntity(message, headers, HttpStatus.INTERNAL_SERVER_ERROR)
                 }
             }
-        } catch(e: PaperShelfException) {
+        } catch (e: PaperShelfException) {
             val message = Message(status = 404, error = "Not Found", message = e.message)
 
             headers.add("Content-Type", "application/json")

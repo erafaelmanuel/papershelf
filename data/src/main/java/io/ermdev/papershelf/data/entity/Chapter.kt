@@ -18,8 +18,9 @@ class Chapter(@Id
               @Column(name = "upload_date")
               var uploadDate: Timestamp = Timestamp(System.currentTimeMillis()),
 
-              @OneToMany(mappedBy = "chapter", cascade = [CascadeType.REMOVE])
-              var pages: MutableSet<Page> = HashSet(),
+              @OneToMany(mappedBy = "chapter", cascade = [CascadeType.REMOVE], fetch = FetchType.EAGER)
+              @OrderBy("order")
+              var pages: MutableList<Page> = ArrayList(),
 
               @ManyToOne
               @JoinColumn(name = "book_id")
