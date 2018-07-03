@@ -15,4 +15,5 @@ class Genre(@Id
             var description: String = "",
 
             @ManyToMany(mappedBy = "genres")
-            var books: MutableSet<Book> = HashSet())
+            @OrderBy("title")
+            var books: MutableList<Book> = ArrayList())

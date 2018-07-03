@@ -4,6 +4,8 @@ import io.ermdev.papershelf.data.entity.Chapter
 import io.ermdev.papershelf.data.repository.ChapterRepository
 import io.ermdev.papershelf.exception.EntityException
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.data.domain.Page
+import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Service
 import org.springframework.util.StringUtils
 import java.util.*
@@ -12,6 +14,10 @@ import java.util.*
 class ChapterService(@Autowired val chapterRepository: ChapterRepository) {
 
     fun findAll(): List<Chapter> = chapterRepository.findAll()
+
+    fun findAll(pageable: Pageable): Page<Chapter> {
+        return chapterRepository.findAll(pageable)
+    }
 
     fun findById(id: String): Chapter {
         return chapterRepository.findById(id).orElseThrow({

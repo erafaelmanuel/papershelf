@@ -9,6 +9,7 @@ import io.ermdev.papershelf.rest.Message
 import io.ermdev.papershelf.rest.page.PageController
 import io.ermdev.papershelf.rest.page.PageDto
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.data.domain.Pageable
 import org.springframework.hateoas.Resource
 import org.springframework.hateoas.Resources
 import org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo
@@ -24,9 +25,9 @@ class ChapterController(@Autowired val chapterService: ChapterService,
                         @Autowired val bookService: BookService) {
 
     @GetMapping(produces = ["application/json"])
-    fun getChapters(): ResponseEntity<Any> {
+    fun getChapters(pageable: Pageable): ResponseEntity<Any> {
         val resources = ArrayList<ChapterDto>()
-        chapterService.findAll().forEach({ chapter ->
+        chapterService.findAll(pageable).forEach({ chapter ->
             val dto = ChapterDto(id = chapter.id, name = chapter.name, order = chapter.order,
                     uploadDate = chapter.uploadDate, bookId = chapter.book.id)
 

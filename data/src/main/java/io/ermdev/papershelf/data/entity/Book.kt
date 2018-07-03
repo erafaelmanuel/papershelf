@@ -23,12 +23,15 @@ class Book(@Id
            @ManyToMany(cascade = [CascadeType.ALL])
            @JoinTable(name = "tbl_book_author", joinColumns = [JoinColumn(name = "book_id")],
                    inverseJoinColumns = [JoinColumn(name = "author_id")])
-           var authors: MutableSet<Author> = HashSet(),
+           @OrderBy("name")
+           var authors: MutableList<Author> = ArrayList(),
 
            @ManyToMany(cascade = [CascadeType.ALL])
            @JoinTable(name = "tbl_book_genre", joinColumns = [JoinColumn(name = "book_id")],
                    inverseJoinColumns = [JoinColumn(name = "genre_id")])
-           var genres: MutableSet<Genre> = HashSet(),
+           @OrderBy("name")
+           var genres: MutableList<Genre> = ArrayList(),
 
+           @OrderBy("order")
            @OneToMany(mappedBy = "book", cascade = [CascadeType.REMOVE])
-           var chapters: MutableSet<Chapter> = HashSet())
+           var chapters: MutableList<Chapter> = ArrayList())
