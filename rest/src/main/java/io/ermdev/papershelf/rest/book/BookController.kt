@@ -42,11 +42,11 @@ class BookController(@Autowired val bookService: BookService,
 
                 dto.add(linkTo(methodOn(this::class.java).getBookById(book.id)).withSelfRel())
                 dto.add(linkTo(methodOn(this::class.java)
-                        .getAuthorsById(book.id, null)).withRel("authors"))
+                        .getAuthorsById(book.id, Pageable.unpaged())).withRel("authors"))
                 dto.add(linkTo(methodOn(this::class.java)
-                        .getChaptersById(book.id, null)).withRel("chapters"))
+                        .getChaptersById(book.id, Pageable.unpaged())).withRel("chapters"))
                 dto.add(linkTo(methodOn(this::class.java)
-                        .getGenresById(book.id, null)).withRel("genres"))
+                        .getGenresById(book.id, Pageable.unpaged())).withRel("genres"))
                 resources.add(dto)
             })
         } else if (!StringUtils.isEmpty(authorId)) {
@@ -56,11 +56,11 @@ class BookController(@Autowired val bookService: BookService,
 
                 dto.add(linkTo(methodOn(this::class.java).getBookById(book.id)).withSelfRel())
                 dto.add(linkTo(methodOn(this::class.java)
-                        .getAuthorsById(book.id, null)).withRel("authors"))
+                        .getAuthorsById(book.id, Pageable.unpaged())).withRel("authors"))
                 dto.add(linkTo(methodOn(this::class.java)
-                        .getChaptersById(book.id, null)).withRel("chapters"))
+                        .getChaptersById(book.id, Pageable.unpaged())).withRel("chapters"))
                 dto.add(linkTo(methodOn(this::class.java)
-                        .getGenresById(book.id, null)).withRel("genres"))
+                        .getGenresById(book.id, Pageable.unpaged())).withRel("genres"))
                 resources.add(dto)
             })
         } else if (!StringUtils.isEmpty(genreId)) {
@@ -70,11 +70,11 @@ class BookController(@Autowired val bookService: BookService,
 
                 dto.add(linkTo(methodOn(this::class.java).getBookById(book.id)).withSelfRel())
                 dto.add(linkTo(methodOn(this::class.java)
-                        .getAuthorsById(book.id, null)).withRel("authors"))
+                        .getAuthorsById(book.id, Pageable.unpaged())).withRel("authors"))
                 dto.add(linkTo(methodOn(this::class.java)
-                        .getChaptersById(book.id, null)).withRel("chapters"))
+                        .getChaptersById(book.id, Pageable.unpaged())).withRel("chapters"))
                 dto.add(linkTo(methodOn(this::class.java)
-                        .getGenresById(book.id, null)).withRel("genres"))
+                        .getGenresById(book.id, Pageable.unpaged())).withRel("genres"))
                 resources.add(dto)
             })
         } else {
@@ -84,11 +84,11 @@ class BookController(@Autowired val bookService: BookService,
 
                 dto.add(linkTo(methodOn(this::class.java).getBookById(book.id)).withSelfRel())
                 dto.add(linkTo(methodOn(this::class.java)
-                        .getAuthorsById(book.id, null)).withRel("authors"))
+                        .getAuthorsById(book.id, Pageable.unpaged())).withRel("authors"))
                 dto.add(linkTo(methodOn(this::class.java)
-                        .getChaptersById(book.id, null)).withRel("chapters"))
+                        .getChaptersById(book.id, Pageable.unpaged())).withRel("chapters"))
                 dto.add(linkTo(methodOn(this::class.java)
-                        .getGenresById(book.id, null)).withRel("genres"))
+                        .getGenresById(book.id, Pageable.unpaged())).withRel("genres"))
                 resources.add(dto)
             })
         }
@@ -103,9 +103,12 @@ class BookController(@Autowired val bookService: BookService,
                     summary = book.summary, imageUrl = book.imageUrl)
 
             dto.add(linkTo(methodOn(this::class.java).getBookById(book.id)).withSelfRel())
-            dto.add(linkTo(methodOn(this::class.java).getAuthorsById(book.id, null)).withRel("authors"))
-            dto.add(linkTo(methodOn(this::class.java).getChaptersById(book.id, null)).withRel("chapters"))
-            dto.add(linkTo(methodOn(this::class.java).getGenresById(book.id, null)).withRel("genres"))
+            dto.add(linkTo(methodOn(this::class.java)
+                    .getAuthorsById(book.id, Pageable.unpaged())).withRel("authors"))
+            dto.add(linkTo(methodOn(this::class.java)
+                    .getChaptersById(book.id, Pageable.unpaged())).withRel("chapters"))
+            dto.add(linkTo(methodOn(this::class.java)
+                    .getGenresById(book.id, Pageable.unpaged())).withRel("genres"))
             ResponseEntity(Resource(dto), HttpStatus.OK)
         } catch (e: PaperShelfException) {
             val message = Message(status = 404, error = "Not Found", message = e.message)
@@ -115,7 +118,7 @@ class BookController(@Autowired val bookService: BookService,
 
     @GetMapping(value = ["/{bookId}/authors"], produces = ["application/json"])
     fun getAuthorsById(@PathVariable("bookId") bookId: String,
-                       @PageableDefault(sort = ["name"]) pageable: Pageable?): ResponseEntity<Any> {
+                       @PageableDefault(sort = ["name"]) pageable: Pageable): ResponseEntity<Any> {
         return try {
             val resources = ArrayList<AuthorDto>()
             bookService.findAuthorsById(bookId, pageable).forEach({ author ->
@@ -125,7 +128,7 @@ class BookController(@Autowired val bookService: BookService,
                 resources.add(dto)
             })
             ResponseEntity(Resources(resources, linkTo(methodOn(this::class.java)
-                    .getAuthorsById(bookId, null)).withRel("authors")), HttpStatus.OK)
+                    .getAuthorsById(bookId, Pageable.unpaged())).withRel("authors")), HttpStatus.OK)
         } catch (e: PaperShelfException) {
             val message = Message(status = 404, error = "Not Found", message = e.message)
             ResponseEntity(message, HttpStatus.NOT_FOUND)
@@ -134,18 +137,18 @@ class BookController(@Autowired val bookService: BookService,
 
     @GetMapping(value = ["/{bookId}/chapters"], produces = ["application/json"])
     fun getChaptersById(@PathVariable("bookId") bookId: String,
-                        @PageableDefault(sort = ["order"]) pageable: Pageable?): ResponseEntity<Any> {
+                        @PageableDefault(sort = ["index"]) pageable: Pageable): ResponseEntity<Any> {
         return try {
             val resources = ArrayList<ChapterDto>()
             bookService.findChaptersById(bookId, pageable).forEach({ chapter ->
-                val dto = ChapterDto(id = chapter.id, name = chapter.name, order = chapter.order,
+                val dto = ChapterDto(id = chapter.id, name = chapter.name, index = chapter.index,
                         uploadDate = chapter.uploadDate, bookId = chapter.book.id)
 
                 dto.add(linkTo(methodOn(ChapterController::class.java).getChapterById(chapter.id)).withSelfRel())
                 resources.add(dto)
             })
             return ResponseEntity(Resources(resources, linkTo(methodOn(this::class.java)
-                    .getChaptersById(bookId, null)).withRel("chapters")), HttpStatus.OK)
+                    .getChaptersById(bookId, Pageable.unpaged())).withRel("chapters")), HttpStatus.OK)
         } catch (e: PaperShelfException) {
             val message = Message(status = 404, error = "Not Found", message = e.message)
             ResponseEntity(message, HttpStatus.NOT_FOUND)
@@ -154,7 +157,7 @@ class BookController(@Autowired val bookService: BookService,
 
     @GetMapping(value = ["/{bookId}/genres"], produces = ["application/json"])
     fun getGenresById(@PathVariable("bookId") bookId: String,
-                      @PageableDefault(sort = ["name"]) pageable: Pageable?): ResponseEntity<Any> {
+                      @PageableDefault(sort = ["name"]) pageable: Pageable): ResponseEntity<Any> {
         return try {
             val resources = ArrayList<GenreDto>()
             bookService.findGenresById(bookId, pageable).forEach({ genre ->
@@ -164,7 +167,7 @@ class BookController(@Autowired val bookService: BookService,
                 resources.add(dto)
             })
             return ResponseEntity(Resources(resources, linkTo(methodOn(this::class.java)
-                    .getGenresById(bookId, null)).withRel("genres")), HttpStatus.OK)
+                    .getGenresById(bookId, Pageable.unpaged())).withRel("genres")), HttpStatus.OK)
         } catch (e: PaperShelfException) {
             val message = Message(status = 404, error = "Not Found", message = e.message)
             ResponseEntity(message, HttpStatus.NOT_FOUND)

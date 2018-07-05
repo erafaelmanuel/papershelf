@@ -12,23 +12,23 @@ import org.springframework.data.repository.query.Param
 
 interface BookRepository : JpaRepository<Book, String> {
 
-    @Query("select T1 from Book as T1 join T1.authors as T2 where T2.id=:authorId")
+    @Query("SELECT b FROM Book AS b JOIN b.authors AS a WHERE a.id=:authorId")
     fun findByAuthorId(@Param("authorId") authorId: String, pageable: Pageable): Page<Book>
 
-    @Query("select T1 from Book as T1 join T1.genres as T2 where T2.id=:genreId")
+    @Query("SELECT b FROM Book AS b JOIN b.genres AS g WHERE g.id=:genreId")
     fun findByGenreId(@Param("genreId") genreId: String, pageable: Pageable): Page<Book>
 
-    @Query("select T1 from Book as T1 join T1.authors as T2 join T1.genres as T3 where T2.id=:authorId " +
-            "and T3.id=:genreId")
+    @Query("SELECT b FROM Book AS b JOIN b.authors AS a JOIN b.genres AS g WHERE a.id=:authorId " +
+            "AND g.id=:genreId")
     fun findByAuthorIdAndGenreId(@Param("authorId") authorId: String, @Param("genreId") genreId: String,
                                  pageable: Pageable): Page<Book>
 
     @Query("SELECT a FROM Author AS a JOIN a.books AS b WHERE b.id=:bookId")
-    fun findAuthorsById(@Param("bookId") book: String, pageable: Pageable?): Page<Author>
+    fun findAuthorsById(@Param("bookId") book: String, pageable: Pageable): Page<Author>
 
     @Query("SELECT c FROM Chapter AS c JOIN c.book AS b WHERE b.id=:bookId")
-    fun findChaptersById(@Param("bookId") bookId: String, pageable: Pageable?): Page<Chapter>
+    fun findChaptersById(@Param("bookId") bookId: String, pageable: Pageable): Page<Chapter>
 
     @Query("SELECT g FROM Genre AS g JOIN g.books AS b WHERE b.id=:bookId")
-    fun findGenresById(@Param("bookId") bookId: String, pageable: Pageable?): Page<Genre>
+    fun findGenresById(@Param("bookId") bookId: String, pageable: Pageable): Page<Genre>
 }

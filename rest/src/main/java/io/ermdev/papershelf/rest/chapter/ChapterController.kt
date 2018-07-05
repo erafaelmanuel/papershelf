@@ -10,6 +10,7 @@ import io.ermdev.papershelf.rest.page.PageController
 import io.ermdev.papershelf.rest.page.PageDto
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.data.domain.Pageable
+import org.springframework.data.web.PageableDefault
 import org.springframework.hateoas.Resource
 import org.springframework.hateoas.Resources
 import org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo
@@ -28,11 +29,12 @@ class ChapterController(@Autowired val chapterService: ChapterService,
     fun getChapters(pageable: Pageable): ResponseEntity<Any> {
         val resources = ArrayList<ChapterDto>()
         chapterService.findAll(pageable).forEach({ chapter ->
-            val dto = ChapterDto(id = chapter.id, name = chapter.name, order = chapter.order,
+            val dto = ChapterDto(id = chapter.id, name = chapter.name, index = chapter.index,
                     uploadDate = chapter.uploadDate, bookId = chapter.book.id)
 
             dto.add(linkTo(methodOn(this::class.java).getChapterById(chapter.id)).withSelfRel())
-            dto.add(linkTo(methodOn(this::class.java).getPages(chapter.id)).withRel("pages"))
+            dto.add(linkTo(methodOn(this::class.java)
+                    .getPagesById(chapter.id, Pageable.unpaged())).withRel("pages"))
             resources.add(dto)
         })
         return ResponseEntity(Resources(resources, linkTo(this::class.java).withSelfRel()), HttpStatus.OK)
@@ -42,11 +44,12 @@ class ChapterController(@Autowired val chapterService: ChapterService,
     fun getChapterById(@PathVariable("chapterId") chapterId: String): ResponseEntity<Any> {
         return try {
             val chapter = chapterService.findById(chapterId)
-            val dto = ChapterDto(id = chapter.id, name = chapter.name, order = chapter.order,
+            val dto = ChapterDto(id = chapter.id, name = chapter.name, index = chapter.index,
                     uploadDate = chapter.uploadDate, bookId = chapter.book.id)
 
             dto.add(linkTo(methodOn(this::class.java).getChapterById(chapter.id)).withSelfRel())
-            dto.add(linkTo(methodOn(this::class.java).getPages(chapter.id)).withRel("pages"))
+            dto.add(linkTo(methodOn(this::class.java)
+                    .getPagesById(chapter.id, Pageable.unpaged())).withRel("pages"))
             ResponseEntity(Resource(dto), HttpStatus.OK)
         } catch (e: PaperShelfException) {
             val message = Message(status = 404, error = "Not Found", message = e.message)
@@ -55,19 +58,20 @@ class ChapterController(@Autowired val chapterService: ChapterService,
     }
 
     @GetMapping(value = ["/{chapterId}/pages"], produces = ["application/json"])
-    fun getPages(@PathVariable("chapterId") chapterId: String): ResponseEntity<Any> {
+    fun getPagesById(@PathVariable("chapterId") chapterId: String,
+                     @PageableDefault(sort = ["order"]) pageable: Pageable): ResponseEntity<Any> {
         return try {
             val resources = ArrayList<PageDto>()
 
-            chapterService.findById(chapterId).pages.forEach({ page ->
+            chapterService.findPagesById(chapterId, pageable).forEach({ page ->
                 val dto = PageDto(id = page.id, order = page.order, imageUrl = page.imageUrl,
                         chapterId = page.chapter.id)
 
                 dto.add(linkTo(methodOn(PageController::class.java).getPageById(page.id)).withSelfRel())
                 resources.add(dto)
             })
-            ResponseEntity(Resources(resources, linkTo(methodOn(this::class.java).getPages(chapterId))
-                    .withRel("pages")), HttpStatus.OK)
+            ResponseEntity(Resources(resources, linkTo(methodOn(this::class.java)
+                    .getPagesById(chapterId, Pageable.unpaged())).withRel("pages")), HttpStatus.OK)
         } catch (e: PaperShelfException) {
             val message = Message(status = 404, error = "Not Found", message = e.message)
             ResponseEntity(message, HttpStatus.NOT_FOUND)
@@ -80,7 +84,7 @@ class ChapterController(@Autowired val chapterService: ChapterService,
             if (StringUtils.isEmpty(body.bookId)) {
                 throw ResourceException("bookId cannot be empty")
             }
-            val book = Chapter(name = body.name, order = body.order, book = bookService.findById(body.bookId))
+            val book = Chapter(name = body.name, index = body.index, book = bookService.findById(body.bookId))
 
             chapterService.save(book)
             ResponseEntity(HttpStatus.CREATED)
@@ -97,7 +101,7 @@ class ChapterController(@Autowired val chapterService: ChapterService,
             val chapter = chapterService.findById(chapterId)
 
             chapter.name = body.name
-            chapter.order = body.order
+            chapter.index = body.index
             chapter.book = bookService.findById(body.bookId)
 
             chapterService.save(chapter)

@@ -39,15 +39,15 @@ class BookService(@Autowired val bookRepository: BookRepository) {
         return bookRepository.findByAuthorIdAndGenreId(authorId, genreId, pageable)
     }
 
-    fun findAuthorsById(bookId: String, pageable: Pageable?): Page<Author> {
+    fun findAuthorsById(bookId: String, pageable: Pageable): Page<Author> {
         return bookRepository.findAuthorsById(bookId, pageable)
     }
 
-    fun findChaptersById(bookId: String, pageable: Pageable?): Page<Chapter> {
+    fun findChaptersById(bookId: String, pageable: Pageable): Page<Chapter> {
         return bookRepository.findChaptersById(bookId, pageable)
     }
 
-    fun findGenresById(bookId: String, pageable: Pageable?): Page<Genre> {
+    fun findGenresById(bookId: String, pageable: Pageable): Page<Genre> {
         return bookRepository.findGenresById(bookId, pageable)
     }
 

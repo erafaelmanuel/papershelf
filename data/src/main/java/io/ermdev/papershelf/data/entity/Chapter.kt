@@ -12,15 +12,14 @@ class Chapter(@Id
               @Column(name = "_name")
               var name: String = "",
 
-              @Column(name = "_order")
-              var order: Short = 0,
+              @Column(name = "_index")
+              var index: Short = 0,
 
               @Column(name = "upload_date")
               var uploadDate: Timestamp = Timestamp(System.currentTimeMillis()),
 
               @OneToMany(mappedBy = "chapter", cascade = [CascadeType.REMOVE])
-              @OrderBy("order")
-              var pages: MutableList<Page> = ArrayList(),
+              var pages: MutableSet<Page> = HashSet(),
 
               @ManyToOne
               @JoinColumn(name = "book_id")
