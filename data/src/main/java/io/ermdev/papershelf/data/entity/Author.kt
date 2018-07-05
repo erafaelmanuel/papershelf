@@ -12,5 +12,4 @@ class Author(@Id
              var name: String = "",
 
              @ManyToMany(mappedBy = "authors")
-             @OrderBy("title")
-             var books: MutableList<Book> = ArrayList())
+             var books: MutableSet<Book> = HashSet())

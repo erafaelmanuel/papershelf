@@ -12,18 +12,18 @@ import java.util.*
 @Service
 class AuthorService(val authorRepository: AuthorRepository) {
 
-    fun findAll(): List<Author> = authorRepository.findAll()
-
     fun findAll(pageable: Pageable): Page<Author> {
         return authorRepository.findAll(pageable)
     }
 
+    @Throws(exceptionClasses = [EntityException::class])
     fun findById(id: String): Author {
         return authorRepository.findById(id).orElseThrow({
             EntityException("No author with id '$id' exists!")
         })
     }
 
+    @Throws(exceptionClasses = [EntityException::class])
     fun save(author: Author) {
         if (StringUtils.isEmpty(author.name)) {
             throw EntityException("name cannot be empty")
@@ -37,5 +37,7 @@ class AuthorService(val authorRepository: AuthorRepository) {
         authorRepository.save(author)
     }
 
-    fun deleteById(id: String) = authorRepository.deleteById(id)
+    fun deleteById(id: String) {
+        authorRepository.deleteById(id)
+    }
 }
