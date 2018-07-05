@@ -12,8 +12,8 @@ class Chapter(@Id
               @Column(name = "_name")
               var name: String = "",
 
-              @Column(name = "_index")
-              var index: Short = 0,
+              @Column(name = "_level")
+              var level: Double = 0.0,
 
               @Column(name = "upload_date")
               var uploadDate: Timestamp = Timestamp(System.currentTimeMillis()),

@@ -7,6 +7,6 @@ import java.sql.Timestamp
 @Relation(value = "chapter", collectionRelation = "chapters")
 class ChapterDto(var id: String = "",
                  var name: String = "",
-                 var index: Short = 0,
+                 var level: Double = 0.0,
                  var uploadDate: Timestamp = Timestamp(System.currentTimeMillis()),
                  var bookId: String = "") : ResourceSupport()

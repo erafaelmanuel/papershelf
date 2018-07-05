@@ -137,11 +137,11 @@ class BookController(@Autowired val bookService: BookService,
 
     @GetMapping(value = ["/{bookId}/chapters"], produces = ["application/json"])
     fun getChaptersById(@PathVariable("bookId") bookId: String,
-                        @PageableDefault(sort = ["index"]) pageable: Pageable): ResponseEntity<Any> {
+                        @PageableDefault(sort = ["level"]) pageable: Pageable): ResponseEntity<Any> {
         return try {
             val resources = ArrayList<ChapterDto>()
             bookService.findChaptersById(bookId, pageable).forEach({ chapter ->
-                val dto = ChapterDto(id = chapter.id, name = chapter.name, index = chapter.index,
+                val dto = ChapterDto(id = chapter.id, name = chapter.name, level = chapter.level,
                         uploadDate = chapter.uploadDate, bookId = chapter.book.id)
 
                 dto.add(linkTo(methodOn(ChapterController::class.java).getChapterById(chapter.id)).withSelfRel())

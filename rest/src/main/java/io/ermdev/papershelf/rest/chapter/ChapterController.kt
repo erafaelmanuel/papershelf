@@ -26,10 +26,10 @@ class ChapterController(@Autowired val chapterService: ChapterService,
                         @Autowired val bookService: BookService) {
 
     @GetMapping(produces = ["application/json"])
-    fun getChapters(pageable: Pageable): ResponseEntity<Any> {
+    fun getChapters(@PageableDefault(sort = ["level"]) pageable: Pageable): ResponseEntity<Any> {
         val resources = ArrayList<ChapterDto>()
         chapterService.findAll(pageable).forEach({ chapter ->
-            val dto = ChapterDto(id = chapter.id, name = chapter.name, index = chapter.index,
+            val dto = ChapterDto(id = chapter.id, name = chapter.name, level = chapter.level,
                     uploadDate = chapter.uploadDate, bookId = chapter.book.id)
 
             dto.add(linkTo(methodOn(this::class.java).getChapterById(chapter.id)).withSelfRel())
@@ -44,7 +44,7 @@ class ChapterController(@Autowired val chapterService: ChapterService,
     fun getChapterById(@PathVariable("chapterId") chapterId: String): ResponseEntity<Any> {
         return try {
             val chapter = chapterService.findById(chapterId)
-            val dto = ChapterDto(id = chapter.id, name = chapter.name, index = chapter.index,
+            val dto = ChapterDto(id = chapter.id, name = chapter.name, level = chapter.level,
                     uploadDate = chapter.uploadDate, bookId = chapter.book.id)
 
             dto.add(linkTo(methodOn(this::class.java).getChapterById(chapter.id)).withSelfRel())
@@ -84,7 +84,7 @@ class ChapterController(@Autowired val chapterService: ChapterService,
             if (StringUtils.isEmpty(body.bookId)) {
                 throw ResourceException("bookId cannot be empty")
             }
-            val book = Chapter(name = body.name, index = body.index, book = bookService.findById(body.bookId))
+            val book = Chapter(name = body.name, level = body.level, book = bookService.findById(body.bookId))
 
             chapterService.save(book)
             ResponseEntity(HttpStatus.CREATED)
@@ -101,7 +101,7 @@ class ChapterController(@Autowired val chapterService: ChapterService,
             val chapter = chapterService.findById(chapterId)
 
             chapter.name = body.name
-            chapter.index = body.index
+            chapter.level = body.level
             chapter.book = bookService.findById(body.bookId)
 
             chapterService.save(chapter)
