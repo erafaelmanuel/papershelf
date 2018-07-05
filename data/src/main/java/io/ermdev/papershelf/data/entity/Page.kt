@@ -11,8 +11,8 @@ class Page(@Id
            @Column(name = "_order")
            var order: Short = 0,
 
-           @Column(name = "_image")
-           var image: String = "",
+           @Column(name = "image_url")
+           var imageUrl: String = "",
 
            @ManyToOne
            @JoinColumn(name = "chapter_id", nullable = false)

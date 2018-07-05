@@ -26,7 +26,7 @@ class PageController(@Autowired val pageService: PageService,
     fun getPages(pageable: Pageable): ResponseEntity<Any> {
         val resources = ArrayList<PageDto>()
         pageService.findAll(pageable).forEach({ page ->
-            val dto = PageDto(id = page.id, order = page.order, image = page.image, chapterId = page.chapter.id)
+            val dto = PageDto(id = page.id, order = page.order, imageUrl = page.imageUrl, chapterId = page.chapter.id)
 
             dto.add(linkTo(methodOn(this::class.java).getPageById(page.id)).withSelfRel())
             resources.add(dto)
@@ -38,7 +38,7 @@ class PageController(@Autowired val pageService: PageService,
     fun getPageById(@PathVariable("pageId") pageId: String): ResponseEntity<Any> {
         return try {
             val page = pageService.findById(pageId)
-            val dto = PageDto(id = page.id, order = page.order, image = page.image, chapterId = page.chapter.id)
+            val dto = PageDto(id = page.id, order = page.order, imageUrl = page.imageUrl, chapterId = page.chapter.id)
 
             dto.add(linkTo(methodOn(this::class.java).getPageById(page.id)).withSelfRel())
             ResponseEntity(Resource(dto), HttpStatus.OK)
@@ -54,7 +54,7 @@ class PageController(@Autowired val pageService: PageService,
             if (StringUtils.isEmpty(body.chapterId)) {
                 throw ResourceException("chapterId cannot be empty")
             }
-            val page = Page(order = body.order, image = body.image, chapter = chapterService.findById(body.chapterId))
+            val page = Page(order = body.order, imageUrl = body.imageUrl, chapter = chapterService.findById(body.chapterId))
 
             pageService.save(page)
             ResponseEntity(HttpStatus.CREATED)
@@ -71,7 +71,7 @@ class PageController(@Autowired val pageService: PageService,
             val page = pageService.findById(pageId)
 
             page.order = body.order
-            page.image = body.image
+            page.imageUrl = body.imageUrl
             page.chapter = chapterService.findById(body.chapterId)
 
             pageService.save(page)

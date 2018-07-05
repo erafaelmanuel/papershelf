@@ -8,4 +8,4 @@ class BookDto(var id: String = "",
               var title: String = "",
               var status: String = "",
               var summary: String = "",
-              var thumbnail: String = "") : ResourceSupport()
+              var imageUrl: String = "") : ResourceSupport()

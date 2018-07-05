@@ -38,7 +38,7 @@ class BookController(@Autowired val bookService: BookService,
         if (!StringUtils.isEmpty(authorId) && !StringUtils.isEmpty(genreId)) {
             bookService.findByAuthorIdAndGenreId(authorId!!, genreId!!, pageable).forEach({ book ->
                 val dto = BookDto(id = book.id, title = book.title, status = book.status,
-                        summary = book.summary, thumbnail = book.thumbnail)
+                        summary = book.summary, imageUrl = book.imageUrl)
 
                 dto.add(linkTo(methodOn(this::class.java).getBookById(book.id)).withSelfRel())
                 dto.add(linkTo(methodOn(this::class.java).getAuthors(book.id)).withRel("authors"))
@@ -49,7 +49,7 @@ class BookController(@Autowired val bookService: BookService,
         } else if (!StringUtils.isEmpty(authorId)) {
             bookService.findByAuthorId(authorId!!, pageable).forEach({ book ->
                 val dto = BookDto(id = book.id, title = book.title, status = book.status,
-                        summary = book.summary, thumbnail = book.thumbnail)
+                        summary = book.summary, imageUrl = book.imageUrl)
 
                 dto.add(linkTo(methodOn(this::class.java).getBookById(book.id)).withSelfRel())
                 dto.add(linkTo(methodOn(this::class.java).getAuthors(book.id)).withRel("authors"))
@@ -60,7 +60,7 @@ class BookController(@Autowired val bookService: BookService,
         } else if (!StringUtils.isEmpty(genreId)) {
             bookService.findByGenreId(genreId!!, pageable).forEach({ book ->
                 val dto = BookDto(id = book.id, title = book.title, status = book.status,
-                        summary = book.summary, thumbnail = book.thumbnail)
+                        summary = book.summary, imageUrl = book.imageUrl)
 
                 dto.add(linkTo(methodOn(this::class.java).getBookById(book.id)).withSelfRel())
                 dto.add(linkTo(methodOn(this::class.java).getAuthors(book.id)).withRel("authors"))
@@ -71,7 +71,7 @@ class BookController(@Autowired val bookService: BookService,
         } else {
             bookService.findAll(pageable).forEach({ book ->
                 val dto = BookDto(id = book.id, title = book.title, status = book.status,
-                        summary = book.summary, thumbnail = book.thumbnail)
+                        summary = book.summary, imageUrl = book.imageUrl)
 
                 dto.add(linkTo(methodOn(this::class.java).getBookById(book.id)).withSelfRel())
                 dto.add(linkTo(methodOn(this::class.java).getAuthors(book.id)).withRel("authors"))
@@ -88,7 +88,7 @@ class BookController(@Autowired val bookService: BookService,
         return try {
             val book = bookService.findById(bookId)
             val dto = BookDto(id = book.id, title = book.title, status = book.status,
-                    summary = book.summary, thumbnail = book.thumbnail)
+                    summary = book.summary, imageUrl = book.imageUrl)
 
             dto.add(linkTo(methodOn(this::class.java).getBookById(book.id)).withSelfRel())
             dto.add(linkTo(methodOn(this::class.java).getAuthors(book.id)).withRel("authors"))
@@ -160,7 +160,7 @@ class BookController(@Autowired val bookService: BookService,
     fun addBook(@RequestBody body: BookDto): ResponseEntity<Any> {
         return try {
             val book = Book(title = body.title, status = body.status, summary = body.summary,
-                    thumbnail = body.thumbnail)
+                    imageUrl = body.imageUrl)
 
             bookService.save(book)
             ResponseEntity(HttpStatus.CREATED)
@@ -211,7 +211,7 @@ class BookController(@Autowired val bookService: BookService,
             book.title = body.title
             book.status = body.status
             book.summary = body.summary
-            book.thumbnail = body.thumbnail
+            book.imageUrl = body.imageUrl
 
             bookService.save(book)
             ResponseEntity(HttpStatus.OK)

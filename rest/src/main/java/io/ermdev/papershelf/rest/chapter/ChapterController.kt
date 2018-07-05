@@ -60,7 +60,8 @@ class ChapterController(@Autowired val chapterService: ChapterService,
             val resources = ArrayList<PageDto>()
 
             chapterService.findById(chapterId).pages.forEach({ page ->
-                val dto = PageDto(id = page.id, order = page.order, image = page.image, chapterId = page.chapter.id)
+                val dto = PageDto(id = page.id, order = page.order, imageUrl = page.imageUrl,
+                        chapterId = page.chapter.id)
 
                 dto.add(linkTo(methodOn(PageController::class.java).getPageById(page.id)).withSelfRel())
                 resources.add(dto)

@@ -17,16 +17,16 @@ class Book(@Id
            @Column(name = "_summary", length = 500)
            var summary: String = "",
 
-           @Column(name = "_thumbnail")
-           var thumbnail: String = "",
+           @Column(name = "image_url")
+           var imageUrl: String = "",
 
-           @ManyToMany(cascade = [CascadeType.ALL])
+           @ManyToMany
            @JoinTable(name = "tbl_book_author", joinColumns = [JoinColumn(name = "book_id")],
                    inverseJoinColumns = [JoinColumn(name = "author_id")])
            @OrderBy("name")
            var authors: MutableList<Author> = ArrayList(),
 
-           @ManyToMany(cascade = [CascadeType.ALL])
+           @ManyToMany
            @JoinTable(name = "tbl_book_genre", joinColumns = [JoinColumn(name = "book_id")],
                    inverseJoinColumns = [JoinColumn(name = "genre_id")])
            @OrderBy("name")
