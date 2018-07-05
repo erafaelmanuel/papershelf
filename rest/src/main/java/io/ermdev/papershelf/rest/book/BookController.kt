@@ -41,9 +41,12 @@ class BookController(@Autowired val bookService: BookService,
                         summary = book.summary, imageUrl = book.imageUrl)
 
                 dto.add(linkTo(methodOn(this::class.java).getBookById(book.id)).withSelfRel())
-                dto.add(linkTo(methodOn(this::class.java).getAuthors(book.id)).withRel("authors"))
-                dto.add(linkTo(methodOn(this::class.java).getGenres(book.id)).withRel("genres"))
-                dto.add(linkTo(methodOn(this::class.java).getChapters(book.id)).withRel("chapters"))
+                dto.add(linkTo(methodOn(this::class.java)
+                        .getAuthorsById(book.id, null)).withRel("authors"))
+                dto.add(linkTo(methodOn(this::class.java)
+                        .getChaptersById(book.id, null)).withRel("chapters"))
+                dto.add(linkTo(methodOn(this::class.java)
+                        .getGenresById(book.id, null)).withRel("genres"))
                 resources.add(dto)
             })
         } else if (!StringUtils.isEmpty(authorId)) {
@@ -52,9 +55,12 @@ class BookController(@Autowired val bookService: BookService,
                         summary = book.summary, imageUrl = book.imageUrl)
 
                 dto.add(linkTo(methodOn(this::class.java).getBookById(book.id)).withSelfRel())
-                dto.add(linkTo(methodOn(this::class.java).getAuthors(book.id)).withRel("authors"))
-                dto.add(linkTo(methodOn(this::class.java).getGenres(book.id)).withRel("genres"))
-                dto.add(linkTo(methodOn(this::class.java).getChapters(book.id)).withRel("chapters"))
+                dto.add(linkTo(methodOn(this::class.java)
+                        .getAuthorsById(book.id, null)).withRel("authors"))
+                dto.add(linkTo(methodOn(this::class.java)
+                        .getChaptersById(book.id, null)).withRel("chapters"))
+                dto.add(linkTo(methodOn(this::class.java)
+                        .getGenresById(book.id, null)).withRel("genres"))
                 resources.add(dto)
             })
         } else if (!StringUtils.isEmpty(genreId)) {
@@ -63,9 +69,12 @@ class BookController(@Autowired val bookService: BookService,
                         summary = book.summary, imageUrl = book.imageUrl)
 
                 dto.add(linkTo(methodOn(this::class.java).getBookById(book.id)).withSelfRel())
-                dto.add(linkTo(methodOn(this::class.java).getAuthors(book.id)).withRel("authors"))
-                dto.add(linkTo(methodOn(this::class.java).getGenres(book.id)).withRel("genres"))
-                dto.add(linkTo(methodOn(this::class.java).getChapters(book.id)).withRel("chapters"))
+                dto.add(linkTo(methodOn(this::class.java)
+                        .getAuthorsById(book.id, null)).withRel("authors"))
+                dto.add(linkTo(methodOn(this::class.java)
+                        .getChaptersById(book.id, null)).withRel("chapters"))
+                dto.add(linkTo(methodOn(this::class.java)
+                        .getGenresById(book.id, null)).withRel("genres"))
                 resources.add(dto)
             })
         } else {
@@ -74,9 +83,12 @@ class BookController(@Autowired val bookService: BookService,
                         summary = book.summary, imageUrl = book.imageUrl)
 
                 dto.add(linkTo(methodOn(this::class.java).getBookById(book.id)).withSelfRel())
-                dto.add(linkTo(methodOn(this::class.java).getAuthors(book.id)).withRel("authors"))
-                dto.add(linkTo(methodOn(this::class.java).getGenres(book.id)).withRel("genres"))
-                dto.add(linkTo(methodOn(this::class.java).getChapters(book.id)).withRel("chapters"))
+                dto.add(linkTo(methodOn(this::class.java)
+                        .getAuthorsById(book.id, null)).withRel("authors"))
+                dto.add(linkTo(methodOn(this::class.java)
+                        .getChaptersById(book.id, null)).withRel("chapters"))
+                dto.add(linkTo(methodOn(this::class.java)
+                        .getGenresById(book.id, null)).withRel("genres"))
                 resources.add(dto)
             })
         }
@@ -91,9 +103,9 @@ class BookController(@Autowired val bookService: BookService,
                     summary = book.summary, imageUrl = book.imageUrl)
 
             dto.add(linkTo(methodOn(this::class.java).getBookById(book.id)).withSelfRel())
-            dto.add(linkTo(methodOn(this::class.java).getAuthors(book.id)).withRel("authors"))
-            dto.add(linkTo(methodOn(this::class.java).getGenres(book.id)).withRel("genres"))
-            dto.add(linkTo(methodOn(this::class.java).getChapters(book.id)).withRel("chapters"))
+            dto.add(linkTo(methodOn(this::class.java).getAuthorsById(book.id, null)).withRel("authors"))
+            dto.add(linkTo(methodOn(this::class.java).getChaptersById(book.id, null)).withRel("chapters"))
+            dto.add(linkTo(methodOn(this::class.java).getGenresById(book.id, null)).withRel("genres"))
             ResponseEntity(Resource(dto), HttpStatus.OK)
         } catch (e: PaperShelfException) {
             val message = Message(status = 404, error = "Not Found", message = e.message)
@@ -102,35 +114,18 @@ class BookController(@Autowired val bookService: BookService,
     }
 
     @GetMapping(value = ["/{bookId}/authors"], produces = ["application/json"])
-    fun getAuthors(@PathVariable("bookId") bookId: String): ResponseEntity<Any> {
+    fun getAuthorsById(@PathVariable("bookId") bookId: String,
+                       @PageableDefault(sort = ["name"]) pageable: Pageable?): ResponseEntity<Any> {
         return try {
             val resources = ArrayList<AuthorDto>()
-            bookService.findById(bookId).authors.forEach({ author ->
+            bookService.findAuthorsById(bookId, pageable).forEach({ author ->
                 val dto = AuthorDto(id = author.id, name = author.name)
 
                 dto.add(linkTo(methodOn(AuthorController::class.java).getAuthorById(author.id)).withSelfRel())
                 resources.add(dto)
             })
-            ResponseEntity(Resources(resources, linkTo(methodOn(this::class.java).getAuthors(bookId))
-                    .withRel("authors")), HttpStatus.OK)
-        } catch (e: PaperShelfException) {
-            val message = Message(status = 404, error = "Not Found", message = e.message)
-            ResponseEntity(message, HttpStatus.NOT_FOUND)
-        }
-    }
-
-    @GetMapping(value = ["/{bookId}/genres"], produces = ["application/json"])
-    fun getGenres(@PathVariable("bookId") bookId: String): ResponseEntity<Any> {
-        return try {
-            val resources = ArrayList<GenreDto>()
-            bookService.findById(bookId).genres.forEach({ genre ->
-                val dto = GenreDto(id = genre.id, name = genre.name, description = genre.description)
-
-                dto.add(linkTo(methodOn(GenreController::class.java).getGenreById(genre.id)).withSelfRel())
-                resources.add(dto)
-            })
-            return ResponseEntity(Resources(resources, linkTo(methodOn(this::class.java).getGenres(bookId))
-                    .withRel("genres")), HttpStatus.OK)
+            ResponseEntity(Resources(resources, linkTo(methodOn(this::class.java)
+                    .getAuthorsById(bookId, null)).withRel("authors")), HttpStatus.OK)
         } catch (e: PaperShelfException) {
             val message = Message(status = 404, error = "Not Found", message = e.message)
             ResponseEntity(message, HttpStatus.NOT_FOUND)
@@ -138,18 +133,38 @@ class BookController(@Autowired val bookService: BookService,
     }
 
     @GetMapping(value = ["/{bookId}/chapters"], produces = ["application/json"])
-    fun getChapters(@PathVariable("bookId") bookId: String): ResponseEntity<Any> {
+    fun getChaptersById(@PathVariable("bookId") bookId: String,
+                        @PageableDefault(sort = ["order"]) pageable: Pageable?): ResponseEntity<Any> {
         return try {
             val resources = ArrayList<ChapterDto>()
-            bookService.findById(bookId).chapters.forEach({ chapter ->
+            bookService.findChaptersById(bookId, pageable).forEach({ chapter ->
                 val dto = ChapterDto(id = chapter.id, name = chapter.name, order = chapter.order,
-                        uploadDate = chapter.uploadDate)
+                        uploadDate = chapter.uploadDate, bookId = chapter.book.id)
 
                 dto.add(linkTo(methodOn(ChapterController::class.java).getChapterById(chapter.id)).withSelfRel())
                 resources.add(dto)
             })
-            return ResponseEntity(Resources(resources, linkTo(methodOn(this::class.java).getChapters(bookId))
-                    .withRel("chapters")), HttpStatus.OK)
+            return ResponseEntity(Resources(resources, linkTo(methodOn(this::class.java)
+                    .getChaptersById(bookId, null)).withRel("chapters")), HttpStatus.OK)
+        } catch (e: PaperShelfException) {
+            val message = Message(status = 404, error = "Not Found", message = e.message)
+            ResponseEntity(message, HttpStatus.NOT_FOUND)
+        }
+    }
+
+    @GetMapping(value = ["/{bookId}/genres"], produces = ["application/json"])
+    fun getGenresById(@PathVariable("bookId") bookId: String,
+                      @PageableDefault(sort = ["name"]) pageable: Pageable?): ResponseEntity<Any> {
+        return try {
+            val resources = ArrayList<GenreDto>()
+            bookService.findGenresById(bookId, pageable).forEach({ genre ->
+                val dto = GenreDto(id = genre.id, name = genre.name, description = genre.description)
+
+                dto.add(linkTo(methodOn(GenreController::class.java).getGenreById(genre.id)).withSelfRel())
+                resources.add(dto)
+            })
+            return ResponseEntity(Resources(resources, linkTo(methodOn(this::class.java)
+                    .getGenresById(bookId, null)).withRel("genres")), HttpStatus.OK)
         } catch (e: PaperShelfException) {
             val message = Message(status = 404, error = "Not Found", message = e.message)
             ResponseEntity(message, HttpStatus.NOT_FOUND)

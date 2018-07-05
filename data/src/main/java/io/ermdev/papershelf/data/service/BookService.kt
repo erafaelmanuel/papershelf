@@ -1,6 +1,9 @@
 package io.ermdev.papershelf.data.service
 
+import io.ermdev.papershelf.data.entity.Author
 import io.ermdev.papershelf.data.entity.Book
+import io.ermdev.papershelf.data.entity.Chapter
+import io.ermdev.papershelf.data.entity.Genre
 import io.ermdev.papershelf.data.repository.BookRepository
 import io.ermdev.papershelf.exception.EntityException
 import org.springframework.beans.factory.annotation.Autowired
@@ -13,12 +16,11 @@ import java.util.*
 @Service
 class BookService(@Autowired val bookRepository: BookRepository) {
 
-    fun findAll(): List<Book> = bookRepository.findAll()
-
     fun findAll(pageable: Pageable): Page<Book> {
         return bookRepository.findAll(pageable)
     }
 
+    @Throws(exceptionClasses = [EntityException::class])
     fun findById(id: String): Book {
         return bookRepository.findById(id).orElseThrow({
             EntityException("No book with id '$id' exists!")
@@ -37,6 +39,19 @@ class BookService(@Autowired val bookRepository: BookRepository) {
         return bookRepository.findByAuthorIdAndGenreId(authorId, genreId, pageable)
     }
 
+    fun findAuthorsById(bookId: String, pageable: Pageable?): Page<Author> {
+        return bookRepository.findAuthorsById(bookId, pageable)
+    }
+
+    fun findChaptersById(bookId: String, pageable: Pageable?): Page<Chapter> {
+        return bookRepository.findChaptersById(bookId, pageable)
+    }
+
+    fun findGenresById(bookId: String, pageable: Pageable?): Page<Genre> {
+        return bookRepository.findGenresById(bookId, pageable)
+    }
+
+    @Throws(exceptionClasses = [EntityException::class])
     fun save(book: Book) {
         if (StringUtils.isEmpty(book.title)) {
             throw EntityException("title cannot be empty")
@@ -56,6 +71,8 @@ class BookService(@Autowired val bookRepository: BookRepository) {
         bookRepository.save(book)
     }
 
-    fun deleteById(bookId: String) = bookRepository.deleteById(bookId)
+    fun deleteById(bookId: String) {
+        bookRepository.deleteById(bookId)
+    }
 
 }
