@@ -15,21 +15,23 @@ class BookSpecification(@RequestParam("title") private val title: String = "",
     override fun toPredicate(root: Root<Book>, query: CriteriaQuery<*>, builder: CriteriaBuilder): Predicate? {
         val predicates: MutableSet<Predicate> = HashSet()
 
-        predicates.add(builder.like(root.get<String>("title"), "%$title%"))
-        predicates.add(builder.equal(root.get<String>("status"), status))
-
-        return if (StringUtils.isEmpty(authorId) && StringUtils.isEmpty(genreId)) {
-            if (StringUtils.isEmpty(title) && StringUtils.isEmpty(status)) {
-                return null
-            }
-            builder.or(*predicates.toTypedArray())
-        } else {
-            val join1 = root.join<Book, Author>("authors", JoinType.LEFT)
-            predicates.add(builder.equal(join1.get<String>("id"), authorId))
-
-            val join2 = join1.parent.join<Book, Genre>("genres", JoinType.LEFT)
-            predicates.add(builder.equal(join2.get<String>("id"), genreId))
-            builder.or(*predicates.toTypedArray())
+        if (!StringUtils.isEmpty(title)) {
+            predicates.add(builder.like(root.get<String>("title"), "%$title%"))
+        }
+        if (!StringUtils.isEmpty(status)) {
+            predicates.add(builder.equal(root.get<String>("status"), status))
+        }
+        if (!StringUtils.isEmpty(authorId)) {
+            val join = root.join<Book, Author>("authors", JoinType.LEFT)
+            predicates.add(builder.equal(join.get<String>("id"), authorId))
+        }
+        if (!StringUtils.isEmpty(genreId)) {
+            val join = root.join<Book, Genre>("genres", JoinType.LEFT)
+            predicates.add(builder.equal(join.get<String>("id"), genreId))
+        }
+        return when {
+            predicates.size > 0 -> builder.or(*predicates.toTypedArray())
+            else -> null
         }
     }
 

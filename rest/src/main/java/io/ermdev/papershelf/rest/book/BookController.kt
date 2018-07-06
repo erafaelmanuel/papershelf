@@ -1,10 +1,9 @@
 package io.ermdev.papershelf.rest.book
 
-import io.ermdev.papershelf.data.book.BookSpecification
-import io.ermdev.papershelf.data.book.Book
-import io.ermdev.papershelf.data.book.BookRepository
 import io.ermdev.papershelf.data.author.AuthorService
+import io.ermdev.papershelf.data.book.Book
 import io.ermdev.papershelf.data.book.BookService
+import io.ermdev.papershelf.data.book.BookSpecification
 import io.ermdev.papershelf.data.genre.GenreService
 import io.ermdev.papershelf.exception.PaperShelfException
 import io.ermdev.papershelf.rest.Message
@@ -23,78 +22,31 @@ import org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo
 import org.springframework.hateoas.mvc.ControllerLinkBuilder.methodOn
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
-import org.springframework.util.StringUtils
 import org.springframework.web.bind.annotation.*
 
 @RestController
 @RequestMapping("/books")
 class BookController(@Autowired val bookService: BookService,
-                     @Autowired val bookRepository: BookRepository,
                      @Autowired val authorService: AuthorService,
                      @Autowired val genreService: GenreService) {
 
     @GetMapping(produces = ["application/json"])
-    fun getBooks(@RequestParam(value = "authorId", required = false) authorId: String?,
-                 @RequestParam(value = "genreId", required = false) genreId: String?,
+    fun getBooks(specification: BookSpecification,
                  @PageableDefault(sort = ["title"]) pageable: Pageable): ResponseEntity<Any> {
         val resources = ArrayList<BookDto>()
-        if (!StringUtils.isEmpty(authorId) && !StringUtils.isEmpty(genreId)) {
-            bookService.findByAuthorIdAndGenreId(authorId!!, genreId!!, pageable).forEach({ book ->
-                val dto = BookDto(id = book.id, title = book.title, status = book.status,
-                        summary = book.summary, imageUrl = book.imageUrl)
+        bookService.findAll(specification, pageable).forEach({ book ->
+            val dto = BookDto(id = book.id, title = book.title, status = book.status,
+                    summary = book.summary, imageUrl = book.imageUrl)
 
-                dto.add(linkTo(methodOn(this::class.java).getBookById(book.id)).withSelfRel())
-                dto.add(linkTo(methodOn(this::class.java)
-                        .getAuthorsById(book.id, Pageable.unpaged())).withRel("authors"))
-                dto.add(linkTo(methodOn(this::class.java)
-                        .getChaptersById(book.id, Pageable.unpaged())).withRel("chapters"))
-                dto.add(linkTo(methodOn(this::class.java)
-                        .getGenresById(book.id, Pageable.unpaged())).withRel("genres"))
-                resources.add(dto)
-            })
-        } else if (!StringUtils.isEmpty(authorId)) {
-            bookService.findByAuthorId(authorId!!, pageable).forEach({ book ->
-                val dto = BookDto(id = book.id, title = book.title, status = book.status,
-                        summary = book.summary, imageUrl = book.imageUrl)
-
-                dto.add(linkTo(methodOn(this::class.java).getBookById(book.id)).withSelfRel())
-                dto.add(linkTo(methodOn(this::class.java)
-                        .getAuthorsById(book.id, Pageable.unpaged())).withRel("authors"))
-                dto.add(linkTo(methodOn(this::class.java)
-                        .getChaptersById(book.id, Pageable.unpaged())).withRel("chapters"))
-                dto.add(linkTo(methodOn(this::class.java)
-                        .getGenresById(book.id, Pageable.unpaged())).withRel("genres"))
-                resources.add(dto)
-            })
-        } else if (!StringUtils.isEmpty(genreId)) {
-            bookService.findByGenreId(genreId!!, pageable).forEach({ book ->
-                val dto = BookDto(id = book.id, title = book.title, status = book.status,
-                        summary = book.summary, imageUrl = book.imageUrl)
-
-                dto.add(linkTo(methodOn(this::class.java).getBookById(book.id)).withSelfRel())
-                dto.add(linkTo(methodOn(this::class.java)
-                        .getAuthorsById(book.id, Pageable.unpaged())).withRel("authors"))
-                dto.add(linkTo(methodOn(this::class.java)
-                        .getChaptersById(book.id, Pageable.unpaged())).withRel("chapters"))
-                dto.add(linkTo(methodOn(this::class.java)
-                        .getGenresById(book.id, Pageable.unpaged())).withRel("genres"))
-                resources.add(dto)
-            })
-        } else {
-            bookService.findAll(pageable).forEach({ book ->
-                val dto = BookDto(id = book.id, title = book.title, status = book.status,
-                        summary = book.summary, imageUrl = book.imageUrl)
-
-                dto.add(linkTo(methodOn(this::class.java).getBookById(book.id)).withSelfRel())
-                dto.add(linkTo(methodOn(this::class.java)
-                        .getAuthorsById(book.id, Pageable.unpaged())).withRel("authors"))
-                dto.add(linkTo(methodOn(this::class.java)
-                        .getChaptersById(book.id, Pageable.unpaged())).withRel("chapters"))
-                dto.add(linkTo(methodOn(this::class.java)
-                        .getGenresById(book.id, Pageable.unpaged())).withRel("genres"))
-                resources.add(dto)
-            })
-        }
+            dto.add(linkTo(methodOn(this::class.java).getBookById(book.id)).withSelfRel())
+            dto.add(linkTo(methodOn(this::class.java)
+                    .getAuthorsById(book.id, Pageable.unpaged())).withRel("authors"))
+            dto.add(linkTo(methodOn(this::class.java)
+                    .getChaptersById(book.id, Pageable.unpaged())).withRel("chapters"))
+            dto.add(linkTo(methodOn(this::class.java)
+                    .getGenresById(book.id, Pageable.unpaged())).withRel("genres"))
+            resources.add(dto)
+        })
         return ResponseEntity(Resources(resources, linkTo(this::class.java).withSelfRel()), HttpStatus.OK)
     }
 
@@ -278,16 +230,5 @@ class BookController(@Autowired val bookService: BookService,
             val message = Message(status = 400, error = "Bad Request", message = e.message)
             ResponseEntity(message, HttpStatus.BAD_REQUEST)
         }
-    }
-
-    @GetMapping("/h")
-    fun something(specification: BookSpecification, pageable: Pageable): ResponseEntity<Any> {
-        val resources = ArrayList<BookDto>()
-        bookRepository.findAll(specification, pageable).forEach({ book ->
-            val dto = BookDto(id = book.id, title = book.title, status = book.status,
-                    summary = book.summary, imageUrl = book.imageUrl)
-            resources.add(dto)
-        })
-        return ResponseEntity.ok(resources)
     }
 }
