@@ -1,7 +1,5 @@
-package io.ermdev.papershelf.data.service
+package io.ermdev.papershelf.data.author
 
-import io.ermdev.papershelf.data.entity.Author
-import io.ermdev.papershelf.data.repository.AuthorRepository
 import io.ermdev.papershelf.exception.EntityException
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable

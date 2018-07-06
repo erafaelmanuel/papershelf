@@ -1,8 +1,8 @@
 package io.ermdev.papershelf.rest.page
 
-import io.ermdev.papershelf.data.entity.Page
-import io.ermdev.papershelf.data.service.ChapterService
-import io.ermdev.papershelf.data.service.PageService
+import io.ermdev.papershelf.data.page.Page
+import io.ermdev.papershelf.data.chapter.ChapterService
+import io.ermdev.papershelf.data.page.PageService
 import io.ermdev.papershelf.exception.PaperShelfException
 import io.ermdev.papershelf.exception.ResourceException
 import io.ermdev.papershelf.rest.Message

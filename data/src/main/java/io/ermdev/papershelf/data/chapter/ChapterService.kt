@@ -1,7 +1,5 @@
-package io.ermdev.papershelf.data.service
+package io.ermdev.papershelf.data.chapter
 
-import io.ermdev.papershelf.data.entity.Chapter
-import io.ermdev.papershelf.data.repository.ChapterRepository
 import io.ermdev.papershelf.exception.EntityException
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.data.domain.Page
@@ -24,7 +22,7 @@ class ChapterService(@Autowired val chapterRepository: ChapterRepository) {
         })
     }
 
-    fun findPagesById(chapterId: String, pageable: Pageable): Page<io.ermdev.papershelf.data.entity.Page> {
+    fun findPagesById(chapterId: String, pageable: Pageable): Page<io.ermdev.papershelf.data.page.Page> {
         return chapterRepository.findPagesById(chapterId, pageable)
     }
 

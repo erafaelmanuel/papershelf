@@ -1,7 +1,7 @@
-package io.ermdev.papershelf.data.service
+package io.ermdev.papershelf.data.page
 
-import io.ermdev.papershelf.data.entity.Page
-import io.ermdev.papershelf.data.repository.PageRepository
+import io.ermdev.papershelf.data.page.Page
+import io.ermdev.papershelf.data.page.PageRepository
 import io.ermdev.papershelf.exception.EntityException
 import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Service

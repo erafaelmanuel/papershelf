@@ -1,5 +1,7 @@
-package io.ermdev.papershelf.data.entity
+package io.ermdev.papershelf.data.chapter
 
+import io.ermdev.papershelf.data.book.Book
+import io.ermdev.papershelf.data.page.Page
 import java.sql.Timestamp
 import javax.persistence.*
 

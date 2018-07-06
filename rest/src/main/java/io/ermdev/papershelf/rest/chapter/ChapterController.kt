@@ -1,8 +1,8 @@
 package io.ermdev.papershelf.rest.chapter
 
-import io.ermdev.papershelf.data.entity.Chapter
-import io.ermdev.papershelf.data.service.BookService
-import io.ermdev.papershelf.data.service.ChapterService
+import io.ermdev.papershelf.data.chapter.Chapter
+import io.ermdev.papershelf.data.book.BookService
+import io.ermdev.papershelf.data.chapter.ChapterService
 import io.ermdev.papershelf.exception.PaperShelfException
 import io.ermdev.papershelf.exception.ResourceException
 import io.ermdev.papershelf.rest.Message

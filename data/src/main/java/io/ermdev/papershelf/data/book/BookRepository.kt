@@ -1,9 +1,8 @@
-package io.ermdev.papershelf.data.repository
+package io.ermdev.papershelf.data.book
 
-import io.ermdev.papershelf.data.entity.Author
-import io.ermdev.papershelf.data.entity.Book
-import io.ermdev.papershelf.data.entity.Chapter
-import io.ermdev.papershelf.data.entity.Genre
+import io.ermdev.papershelf.data.author.Author
+import io.ermdev.papershelf.data.chapter.Chapter
+import io.ermdev.papershelf.data.genre.Genre
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.data.jpa.repository.JpaRepository

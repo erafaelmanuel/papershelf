@@ -1,8 +1,7 @@
 package io.ermdev.papershelf.data.book
 
-import io.ermdev.papershelf.data.entity.Author
-import io.ermdev.papershelf.data.entity.Book
-import io.ermdev.papershelf.data.entity.Genre
+import io.ermdev.papershelf.data.author.Author
+import io.ermdev.papershelf.data.genre.Genre
 import org.springframework.data.jpa.domain.Specification
 import org.springframework.web.bind.annotation.RequestParam
 import javax.persistence.criteria.*

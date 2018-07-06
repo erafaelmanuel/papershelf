@@ -1,7 +1,5 @@
-package io.ermdev.papershelf.data.service
+package io.ermdev.papershelf.data.genre
 
-import io.ermdev.papershelf.data.entity.Genre
-import io.ermdev.papershelf.data.repository.GenreRepository
 import io.ermdev.papershelf.exception.EntityException
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.data.domain.Page

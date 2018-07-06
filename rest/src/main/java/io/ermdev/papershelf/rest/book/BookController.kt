@@ -1,11 +1,11 @@
 package io.ermdev.papershelf.rest.book
 
 import io.ermdev.papershelf.data.book.BookSpecification
-import io.ermdev.papershelf.data.entity.Book
-import io.ermdev.papershelf.data.repository.BookRepository
-import io.ermdev.papershelf.data.service.AuthorService
-import io.ermdev.papershelf.data.service.BookService
-import io.ermdev.papershelf.data.service.GenreService
+import io.ermdev.papershelf.data.book.Book
+import io.ermdev.papershelf.data.book.BookRepository
+import io.ermdev.papershelf.data.author.AuthorService
+import io.ermdev.papershelf.data.book.BookService
+import io.ermdev.papershelf.data.genre.GenreService
 import io.ermdev.papershelf.exception.PaperShelfException
 import io.ermdev.papershelf.rest.Message
 import io.ermdev.papershelf.rest.author.AuthorController

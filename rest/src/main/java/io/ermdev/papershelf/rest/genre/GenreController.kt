@@ -1,8 +1,7 @@
 package io.ermdev.papershelf.rest.genre
 
-import io.ermdev.papershelf.data.entity.Genre
-import io.ermdev.papershelf.data.service.GenreService
-import io.ermdev.papershelf.exception.EntityException
+import io.ermdev.papershelf.data.genre.Genre
+import io.ermdev.papershelf.data.genre.GenreService
 import io.ermdev.papershelf.exception.PaperShelfException
 import io.ermdev.papershelf.rest.Message
 import org.springframework.beans.factory.annotation.Autowired

@@ -1,5 +1,6 @@
-package io.ermdev.papershelf.data.entity
+package io.ermdev.papershelf.data.page
 
+import io.ermdev.papershelf.data.chapter.Chapter
 import javax.persistence.*
 
 @Entity

@@ -1,5 +1,6 @@
-package io.ermdev.papershelf.data.entity
+package io.ermdev.papershelf.data.role
 
+import io.ermdev.papershelf.data.user.User
 import javax.persistence.*
 
 @Entity

@@ -1,10 +1,8 @@
-package io.ermdev.papershelf.data.service
+package io.ermdev.papershelf.data.book
 
-import io.ermdev.papershelf.data.entity.Author
-import io.ermdev.papershelf.data.entity.Book
-import io.ermdev.papershelf.data.entity.Chapter
-import io.ermdev.papershelf.data.entity.Genre
-import io.ermdev.papershelf.data.repository.BookRepository
+import io.ermdev.papershelf.data.author.Author
+import io.ermdev.papershelf.data.chapter.Chapter
+import io.ermdev.papershelf.data.genre.Genre
 import io.ermdev.papershelf.exception.EntityException
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.data.domain.Page
