@@ -1,6 +1,8 @@
 package io.ermdev.papershelf.rest.book
 
+import io.ermdev.papershelf.data.book.BookSpecification
 import io.ermdev.papershelf.data.entity.Book
+import io.ermdev.papershelf.data.repository.BookRepository
 import io.ermdev.papershelf.data.service.AuthorService
 import io.ermdev.papershelf.data.service.BookService
 import io.ermdev.papershelf.data.service.GenreService
@@ -27,6 +29,7 @@ import org.springframework.web.bind.annotation.*
 @RestController
 @RequestMapping("/books")
 class BookController(@Autowired val bookService: BookService,
+                     @Autowired val bookRepository: BookRepository,
                      @Autowired val authorService: AuthorService,
                      @Autowired val genreService: GenreService) {
 
@@ -277,4 +280,14 @@ class BookController(@Autowired val bookService: BookService,
         }
     }
 
+    @GetMapping("/h")
+    fun something(specification: BookSpecification, pageable: Pageable): ResponseEntity<Any> {
+        val resources = ArrayList<BookDto>()
+        bookRepository.findAll(specification, pageable).forEach({ book ->
+            val dto = BookDto(id = book.id, title = book.title, status = book.status,
+                    summary = book.summary, imageUrl = book.imageUrl)
+            resources.add(dto)
+        })
+        return ResponseEntity.ok(resources)
+    }
 }
