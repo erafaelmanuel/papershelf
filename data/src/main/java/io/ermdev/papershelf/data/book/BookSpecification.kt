@@ -3,38 +3,34 @@ package io.ermdev.papershelf.data.book
 import io.ermdev.papershelf.data.author.Author
 import io.ermdev.papershelf.data.genre.Genre
 import org.springframework.data.jpa.domain.Specification
+import org.springframework.util.StringUtils
 import org.springframework.web.bind.annotation.RequestParam
 import javax.persistence.criteria.*
 
-class BookSpecification(@RequestParam("id") var id: String = "",
-                        @RequestParam("title") var title: String = "",
-                        @RequestParam("status") var status: String = "",
+class BookSpecification(@RequestParam("title") private val title: String = "",
+                        @RequestParam("status") private val status: String = "",
                         @RequestParam("authorId") private val authorId: String = "",
                         @RequestParam("genreId") private val genreId: String = "") : Specification<Book> {
 
     override fun toPredicate(root: Root<Book>, query: CriteriaQuery<*>, builder: CriteriaBuilder): Predicate? {
-        val idPath = root.get<String>("id")
-        val titlePath = root.get<String>("title")
-        val statusPath = root.get<String>("status")
+        val predicates: MutableSet<Predicate> = HashSet()
 
-        val authorsPath: Path<String>
-        val genresPath: Path<String>
+        predicates.add(builder.like(root.get<String>("title"), "%$title%"))
+        predicates.add(builder.equal(root.get<String>("status"), status))
 
-        val joinBookAuthor: Join<Book, Author> = root.join<Book, Author>("authors", JoinType.LEFT)
-        val joinBookGenre: Join<Book, Genre>
+        return if (StringUtils.isEmpty(authorId) && StringUtils.isEmpty(genreId)) {
+            if (StringUtils.isEmpty(title) && StringUtils.isEmpty(status)) {
+                return null
+            }
+            builder.or(*predicates.toTypedArray())
+        } else {
+            val join1 = root.join<Book, Author>("authors", JoinType.LEFT)
+            predicates.add(builder.equal(join1.get<String>("id"), authorId))
 
-        authorsPath = joinBookAuthor.get("id")
-        joinBookGenre = joinBookAuthor.parent.join<Book, Genre>("genres", JoinType.LEFT)
-        genresPath = joinBookGenre.get("id")
-
-        return joinBookGenre.on(
-                builder.or(
-                        builder.equal(idPath, id),
-                        builder.equal(titlePath, title),
-                        builder.equal(statusPath, status),
-                        builder.equal(authorsPath, authorId),
-                        builder.equal(genresPath, genreId)
-                )).on
+            val join2 = join1.parent.join<Book, Genre>("genres", JoinType.LEFT)
+            predicates.add(builder.equal(join2.get<String>("id"), genreId))
+            builder.or(*predicates.toTypedArray())
+        }
     }
 
 }
