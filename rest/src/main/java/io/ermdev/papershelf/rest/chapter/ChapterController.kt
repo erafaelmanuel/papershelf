@@ -3,6 +3,7 @@ package io.ermdev.papershelf.rest.chapter
 import io.ermdev.papershelf.data.chapter.Chapter
 import io.ermdev.papershelf.data.book.BookService
 import io.ermdev.papershelf.data.chapter.ChapterService
+import io.ermdev.papershelf.data.chapter.ChapterSpecification
 import io.ermdev.papershelf.exception.PaperShelfException
 import io.ermdev.papershelf.exception.ResourceException
 import io.ermdev.papershelf.rest.Message
@@ -26,9 +27,10 @@ class ChapterController(@Autowired val chapterService: ChapterService,
                         @Autowired val bookService: BookService) {
 
     @GetMapping(produces = ["application/json"])
-    fun getChapters(@PageableDefault(sort = ["level"]) pageable: Pageable): ResponseEntity<Any> {
+    fun getChapters(specification: ChapterSpecification,
+                    @PageableDefault(sort = ["level"]) pageable: Pageable): ResponseEntity<Any> {
         val resources = ArrayList<ChapterDto>()
-        chapterService.findAll(pageable).forEach({ chapter ->
+        chapterService.findAll(specification, pageable).forEach({ chapter ->
             val dto = ChapterDto(id = chapter.id, name = chapter.name, level = chapter.level,
                     uploadDate = chapter.uploadDate, bookId = chapter.book.id)
 
