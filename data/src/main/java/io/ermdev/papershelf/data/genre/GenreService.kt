@@ -11,10 +11,8 @@ import java.util.*
 @Service
 class GenreService(@Autowired val genreRepository: GenreRepository) {
 
-    fun findAll(): List<Genre> = genreRepository.findAll()
-
-    fun findAll(pageable: Pageable): Page<Genre> {
-        return genreRepository.findAll(pageable)
+    fun findAll(specification: GenreSpecification, pageable: Pageable): Page<Genre> {
+        return genreRepository.findAll(specification, pageable)
     }
 
     fun findById(id: String): Genre {

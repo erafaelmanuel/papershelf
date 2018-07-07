@@ -1,13 +1,15 @@
 package io.ermdev.papershelf.rest.page
 
-import io.ermdev.papershelf.data.page.Page
 import io.ermdev.papershelf.data.chapter.ChapterService
+import io.ermdev.papershelf.data.page.Page
 import io.ermdev.papershelf.data.page.PageService
+import io.ermdev.papershelf.data.page.PageSpecification
 import io.ermdev.papershelf.exception.PaperShelfException
 import io.ermdev.papershelf.exception.ResourceException
 import io.ermdev.papershelf.rest.Message
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.data.domain.Pageable
+import org.springframework.data.web.PageableDefault
 import org.springframework.hateoas.Resource
 import org.springframework.hateoas.Resources
 import org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo
@@ -23,9 +25,10 @@ class PageController(@Autowired val pageService: PageService,
                      @Autowired val chapterService: ChapterService) {
 
     @GetMapping(produces = ["application/json"])
-    fun getPages(pageable: Pageable): ResponseEntity<Any> {
+    fun getPages(specification: PageSpecification,
+                 @PageableDefault(sort = ["order"]) pageable: Pageable): ResponseEntity<Any> {
         val resources = ArrayList<PageDto>()
-        pageService.findAll(pageable).forEach({ page ->
+        pageService.findAll(specification, pageable).forEach({ page ->
             val dto = PageDto(id = page.id, order = page.order, imageUrl = page.imageUrl, chapterId = page.chapter.id)
 
             dto.add(linkTo(methodOn(this::class.java).getPageById(page.id)).withSelfRel())

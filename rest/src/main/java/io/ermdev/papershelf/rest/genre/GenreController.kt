@@ -2,9 +2,12 @@ package io.ermdev.papershelf.rest.genre
 
 import io.ermdev.papershelf.data.genre.Genre
 import io.ermdev.papershelf.data.genre.GenreService
+import io.ermdev.papershelf.data.genre.GenreSpecification
 import io.ermdev.papershelf.exception.PaperShelfException
 import io.ermdev.papershelf.rest.Message
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.data.domain.Pageable
+import org.springframework.data.web.PageableDefault
 import org.springframework.hateoas.Resource
 import org.springframework.hateoas.Resources
 import org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo
@@ -18,9 +21,10 @@ import org.springframework.web.bind.annotation.*
 class GenreController(@Autowired val genreService: GenreService) {
 
     @GetMapping(produces = ["application/json"])
-    fun getGenres(): ResponseEntity<Any> {
+    fun getGenres(specification: GenreSpecification,
+                  @PageableDefault(sort = ["name"]) pageable: Pageable): ResponseEntity<Any> {
         val resources = ArrayList<GenreDto>()
-        genreService.findAll().forEach({ genre ->
+        genreService.findAll(specification, pageable).forEach({ genre ->
             val dto = GenreDto(id = genre.id, name = genre.name, description = genre.description)
 
             dto.add(linkTo(methodOn(this::class.java).getGenreById(genre.id)).withSelfRel())

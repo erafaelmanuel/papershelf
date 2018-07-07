@@ -3,6 +3,7 @@ package io.ermdev.papershelf.data.author
 import io.ermdev.papershelf.exception.EntityException
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
+import org.springframework.data.jpa.domain.Specification
 import org.springframework.stereotype.Service
 import org.springframework.util.StringUtils
 import java.util.*
@@ -10,8 +11,8 @@ import java.util.*
 @Service
 class AuthorService(val authorRepository: AuthorRepository) {
 
-    fun findAll(pageable: Pageable): Page<Author> {
-        return authorRepository.findAll(pageable)
+    fun findAll(specification: Specification<Author>, pageable: Pageable): Page<Author> {
+        return authorRepository.findAll(specification, pageable)
     }
 
     @Throws(exceptionClasses = [EntityException::class])

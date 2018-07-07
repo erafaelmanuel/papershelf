@@ -2,6 +2,7 @@ package io.ermdev.papershelf.rest.author
 
 import io.ermdev.papershelf.data.author.Author
 import io.ermdev.papershelf.data.author.AuthorService
+import io.ermdev.papershelf.data.author.AuthorSpecification
 import io.ermdev.papershelf.exception.PaperShelfException
 import io.ermdev.papershelf.rest.Message
 import org.springframework.data.domain.Pageable
@@ -19,9 +20,10 @@ import org.springframework.web.bind.annotation.*
 class AuthorController(val authorService: AuthorService) {
 
     @GetMapping(produces = ["application/json"])
-    fun getAuthors(@PageableDefault(sort = ["name"]) pageable: Pageable): ResponseEntity<Any> {
+    fun getAuthors(specification: AuthorSpecification,
+                   @PageableDefault(sort = ["name"]) pageable: Pageable): ResponseEntity<Any> {
         val resources = ArrayList<AuthorDto>()
-        authorService.findAll(pageable).forEach({ author ->
+        authorService.findAll(specification, pageable).forEach({ author ->
             val dto = AuthorDto(id = author.id, name = author.name)
 
             dto.add(linkTo(methodOn(this::class.java).getAuthorById(author.id)).withSelfRel())

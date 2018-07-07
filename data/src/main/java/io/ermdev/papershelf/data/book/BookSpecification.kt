@@ -7,10 +7,10 @@ import org.springframework.util.StringUtils
 import org.springframework.web.bind.annotation.RequestParam
 import javax.persistence.criteria.*
 
-class BookSpecification(@RequestParam("title") private val title: String = "",
-                        @RequestParam("status") private val status: String = "",
-                        @RequestParam("authorId") private val authorId: String = "",
-                        @RequestParam("genreId") private val genreId: String = "") : Specification<Book> {
+class BookSpecification(@RequestParam("title") private val title: String? = null,
+                        @RequestParam("status") private val status: String? = null,
+                        @RequestParam("authorId") private val authorId: String? = null,
+                        @RequestParam("genreId") private val genreId: String? = null) : Specification<Book> {
 
     override fun toPredicate(root: Root<Book>, query: CriteriaQuery<*>, builder: CriteriaBuilder): Predicate? {
         val predicates: MutableSet<Predicate> = HashSet()
