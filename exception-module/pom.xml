@@ -9,17 +9,7 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>application-module</artifactId>
+    <artifactId>exception-module</artifactId>
 
-    <dependencies>
-        <dependency>
-            <groupId>com.rem.papershelf</groupId>
-            <artifactId>data-module</artifactId>
-        </dependency>
 
-        <dependency>
-            <groupId>com.rem.papershelf</groupId>
-            <artifactId>rest-module</artifactId>
-        </dependency>
-    </dependencies>
 </project>

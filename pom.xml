@@ -8,6 +8,9 @@
 	<version>0.0.1-SNAPSHOT</version>
 	<modules>
 		<module>application-module</module>
+		<module>data-module</module>
+		<module>exception-module</module>
+		<module>rest-module</module>
 	</modules>
 	<packaging>pom</packaging>
 
@@ -81,6 +84,24 @@
 			<dependency>
 				<groupId>com.rem.papershelf</groupId>
 				<artifactId>application-module</artifactId>
+				<version>${project.version}</version>
+			</dependency>
+
+			<dependency>
+				<groupId>com.rem.papershelf</groupId>
+				<artifactId>data-module</artifactId>
+				<version>${project.version}</version>
+			</dependency>
+
+			<dependency>
+				<groupId>com.rem.papershelf</groupId>
+				<artifactId>exception-module</artifactId>
+				<version>${project.version}</version>
+			</dependency>
+
+			<dependency>
+				<groupId>com.rem.papershelf</groupId>
+				<artifactId>rest-module</artifactId>
 				<version>${project.version}</version>
 			</dependency>
 		</dependencies>
