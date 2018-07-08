@@ -89,13 +89,13 @@
 
 			<dependency>
 				<groupId>com.rem.papershelf</groupId>
-				<artifactId>data-module</artifactId>
+				<artifactId>exception-module</artifactId>
 				<version>${project.version}</version>
 			</dependency>
 
 			<dependency>
 				<groupId>com.rem.papershelf</groupId>
-				<artifactId>exception-module</artifactId>
+				<artifactId>data-module</artifactId>
 				<version>${project.version}</version>
 			</dependency>
 
@@ -108,8 +108,8 @@
 	</dependencyManagement>
 
 	<build>
-		<sourceDirectory>${project.basedir}/src/main/kotlin</sourceDirectory>
-		<testSourceDirectory>${project.basedir}/src/test/kotlin</testSourceDirectory>
+		<sourceDirectory>/src/main/kotlin</sourceDirectory>
+		<testSourceDirectory>/src/test/kotlin</testSourceDirectory>
 		<plugins>
 			<plugin>
 				<groupId>org.springframework.boot</groupId>
