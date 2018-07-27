@@ -20,9 +20,9 @@ import org.springframework.web.bind.annotation.*
 @RequestMapping("/genres")
 class GenreController(@Autowired val genreService: GenreService) {
 
-    @GetMapping(produces = ["application/json"])
+    @GetMapping(produces = ["application/json", "application/hal+json"])
     fun getGenres(specification: GenreSpecification,
-                  @PageableDefault(sort = ["name"]) pageable: Pageable): ResponseEntity<Any> {
+                  @PageableDefault(sort = ["name"], size = 20) pageable: Pageable): ResponseEntity<Any> {
         val resources = ArrayList<GenreDto>()
         genreService.findAll(specification, pageable).forEach({ genre ->
             val dto = GenreDto(id = genre.id, name = genre.name, description = genre.description)
@@ -33,7 +33,7 @@ class GenreController(@Autowired val genreService: GenreService) {
         return ResponseEntity(Resources(resources, linkTo(this::class.java).withSelfRel()), HttpStatus.OK)
     }
 
-    @GetMapping(value = ["/{genreId}"], produces = ["application/json"])
+    @GetMapping(value = ["/{genreId}"], produces = ["application/json", "application/hal+json"])
     fun getGenreById(@PathVariable("genreId") genreId: String): ResponseEntity<Any> {
         return try {
             val genre = genreService.findById(genreId)

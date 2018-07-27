@@ -26,9 +26,9 @@ import org.springframework.web.bind.annotation.*
 class ChapterController(@Autowired val chapterService: ChapterService,
                         @Autowired val bookService: BookService) {
 
-    @GetMapping(produces = ["application/json"])
+    @GetMapping(produces = ["application/json", "application/hal+json"])
     fun getChapters(specification: ChapterSpecification,
-                    @PageableDefault(sort = ["level"]) pageable: Pageable): ResponseEntity<Any> {
+                    @PageableDefault(sort = ["level"], size = 20) pageable: Pageable): ResponseEntity<Any> {
         val resources = ArrayList<ChapterDto>()
         chapterService.findAll(specification, pageable).forEach({ chapter ->
             val dto = ChapterDto(id = chapter.id, name = chapter.name, level = chapter.level,
@@ -42,7 +42,7 @@ class ChapterController(@Autowired val chapterService: ChapterService,
         return ResponseEntity(Resources(resources, linkTo(this::class.java).withSelfRel()), HttpStatus.OK)
     }
 
-    @GetMapping(value = ["/{chapterId}"], produces = ["application/json"])
+    @GetMapping(value = ["/{chapterId}"], produces = ["application/json", "application/hal+json"])
     fun getChapterById(@PathVariable("chapterId") chapterId: String): ResponseEntity<Any> {
         return try {
             val chapter = chapterService.findById(chapterId)
@@ -59,9 +59,9 @@ class ChapterController(@Autowired val chapterService: ChapterService,
         }
     }
 
-    @GetMapping(value = ["/{chapterId}/pages"], produces = ["application/json"])
+    @GetMapping(value = ["/{chapterId}/pages"], produces = ["application/json", "application/hal+json"])
     fun getPagesById(@PathVariable("chapterId") chapterId: String,
-                     @PageableDefault(sort = ["order"]) pageable: Pageable): ResponseEntity<Any> {
+                     @PageableDefault(sort = ["order"], size = 20) pageable: Pageable): ResponseEntity<Any> {
         return try {
             val resources = ArrayList<PageDto>()
 

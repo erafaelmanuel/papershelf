@@ -19,9 +19,9 @@ import org.springframework.web.bind.annotation.*
 @RequestMapping("/authors")
 class AuthorController(val authorService: AuthorService) {
 
-    @GetMapping(produces = ["application/json"])
+    @GetMapping(produces = ["application/json", "application/hal+json"])
     fun getAuthors(specification: AuthorSpecification,
-                   @PageableDefault(sort = ["name"]) pageable: Pageable): ResponseEntity<Any> {
+                   @PageableDefault(sort = ["name"], size = 20) pageable: Pageable): ResponseEntity<Any> {
         val resources = ArrayList<AuthorDto>()
         authorService.findAll(specification, pageable).forEach({ author ->
             val dto = AuthorDto(id = author.id, name = author.name)
@@ -32,7 +32,7 @@ class AuthorController(val authorService: AuthorService) {
         return ResponseEntity(Resources(resources, linkTo(this::class.java).withSelfRel()), HttpStatus.OK)
     }
 
-    @GetMapping(value = ["/{authorId}"], produces = ["application/json"])
+    @GetMapping(value = ["/{authorId}"], produces = ["application/json", "application/hal+json"])
     fun getAuthorById(@PathVariable("authorId") authorId: String): ResponseEntity<Any> {
         return try {
             val author = authorService.findById(authorId)

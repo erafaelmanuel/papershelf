@@ -30,9 +30,9 @@ class BookController(@Autowired val bookService: BookService,
                      @Autowired val authorService: AuthorService,
                      @Autowired val genreService: GenreService) {
 
-    @GetMapping(produces = ["application/json"])
+    @GetMapping(produces = ["application/json", "application/hal+json"])
     fun getBooks(specification: BookSpecification,
-                 @PageableDefault(sort = ["title"]) pageable: Pageable): ResponseEntity<Any> {
+                 @PageableDefault(sort = ["title"], size = 20) pageable: Pageable): ResponseEntity<Any> {
         val resources = ArrayList<BookDto>()
         bookService.findAll(specification, pageable).forEach({ book ->
             val dto = BookDto(id = book.id, title = book.title, status = book.status,
@@ -50,7 +50,7 @@ class BookController(@Autowired val bookService: BookService,
         return ResponseEntity(Resources(resources, linkTo(this::class.java).withSelfRel()), HttpStatus.OK)
     }
 
-    @GetMapping(value = ["/{bookId}"], produces = ["application/json"])
+    @GetMapping(value = ["/{bookId}"], produces = ["application/json", "application/hal+json"])
     fun getBookById(@PathVariable("bookId") bookId: String): ResponseEntity<Any> {
         return try {
             val book = bookService.findById(bookId)
@@ -71,9 +71,9 @@ class BookController(@Autowired val bookService: BookService,
         }
     }
 
-    @GetMapping(value = ["/{bookId}/authors"], produces = ["application/json"])
+    @GetMapping(value = ["/{bookId}/authors"], produces = ["application/json", "application/hal+json"])
     fun getAuthorsById(@PathVariable("bookId") bookId: String,
-                       @PageableDefault(sort = ["name"]) pageable: Pageable): ResponseEntity<Any> {
+                       @PageableDefault(sort = ["name"], size = 20) pageable: Pageable): ResponseEntity<Any> {
         return try {
             val resources = ArrayList<AuthorDto>()
             bookService.findAuthorsById(bookId, pageable).forEach({ author ->
@@ -90,9 +90,9 @@ class BookController(@Autowired val bookService: BookService,
         }
     }
 
-    @GetMapping(value = ["/{bookId}/chapters"], produces = ["application/json"])
+    @GetMapping(value = ["/{bookId}/chapters"], produces = ["application/json", "application/hal+json"])
     fun getChaptersById(@PathVariable("bookId") bookId: String,
-                        @PageableDefault(sort = ["level"]) pageable: Pageable): ResponseEntity<Any> {
+                        @PageableDefault(sort = ["level"], size = 20) pageable: Pageable): ResponseEntity<Any> {
         return try {
             val resources = ArrayList<ChapterDto>()
             bookService.findChaptersById(bookId, pageable).forEach({ chapter ->
@@ -110,9 +110,9 @@ class BookController(@Autowired val bookService: BookService,
         }
     }
 
-    @GetMapping(value = ["/{bookId}/genres"], produces = ["application/json"])
+    @GetMapping(value = ["/{bookId}/genres"], produces = ["application/json", "application/hal+json"])
     fun getGenresById(@PathVariable("bookId") bookId: String,
-                      @PageableDefault(sort = ["name"]) pageable: Pageable): ResponseEntity<Any> {
+                      @PageableDefault(sort = ["name"], size = 20) pageable: Pageable): ResponseEntity<Any> {
         return try {
             val resources = ArrayList<GenreDto>()
             bookService.findGenresById(bookId, pageable).forEach({ genre ->

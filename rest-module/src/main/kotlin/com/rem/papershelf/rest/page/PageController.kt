@@ -24,9 +24,9 @@ import org.springframework.web.bind.annotation.*
 class PageController(@Autowired val pageService: PageService,
                      @Autowired val chapterService: ChapterService) {
 
-    @GetMapping(produces = ["application/json"])
+    @GetMapping(produces = ["application/json", "application/hal+json"])
     fun getPages(specification: PageSpecification,
-                 @PageableDefault(sort = ["order"]) pageable: Pageable): ResponseEntity<Any> {
+                 @PageableDefault(sort = ["order"], size = 20) pageable: Pageable): ResponseEntity<Any> {
         val resources = ArrayList<PageDto>()
         pageService.findAll(specification, pageable).forEach({ page ->
             val dto = PageDto(id = page.id, order = page.order, imageUrl = page.imageUrl, chapterId = page.chapter.id)
@@ -37,7 +37,7 @@ class PageController(@Autowired val pageService: PageService,
         return ResponseEntity(Resources(resources, linkTo(this::class.java).withSelfRel()), HttpStatus.OK)
     }
 
-    @GetMapping(value = ["/{pageId}"], produces = ["application/json"])
+    @GetMapping(value = ["/{pageId}"], produces = ["application/json", "application/hal+json"])
     fun getPageById(@PathVariable("pageId") pageId: String): ResponseEntity<Any> {
         return try {
             val page = pageService.findById(pageId)
